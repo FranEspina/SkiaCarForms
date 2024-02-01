@@ -17,7 +17,7 @@ namespace SkiaCarForms
         private float right;
         private float top;
         private float bottom;
-        private readonly float INFINITY = 10000;
+        private readonly float INFINITY = 100000;
         private readonly int laneStrokeWidth = 5;
         private bool unavez = false;
 
