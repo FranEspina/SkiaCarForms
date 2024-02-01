@@ -12,6 +12,7 @@ namespace SkiaCarForms
         private bool _isFirstPainting = true;
         private Car car;
         private Dashboard dashboard;
+        private Road road;
 
         public Form1()
         {
@@ -31,21 +32,18 @@ namespace SkiaCarForms
             this.KeyDown += controls.EventHandlerKeyDown;
             this.KeyUp += controls.EventHandlerKeyUp;
             
+            road = new Road(skglControl.Width / 2, skglControl.Width * 0.9f);
+            var centerLaneRoad = road.GetLaneCenter(2);
 
-            car = new Car(100, this.Height - 150 , 30, 50);
+            car = new Car(centerLaneRoad, this.Height - 150 , 30, 50);
             car.Controls = controls;
+            
             dashboard = new Dashboard(10, 10);
             dashboard.Car = car;
 
             animationIsActive = true;
             AnimationLoop();
 
-        }
-
-        private async void BtnIniciar_Click(object sender, EventArgs e)
-        {
-            animationIsActive = true;
-            await AnimationLoop();
         }
 
         async Task AnimationLoop()
@@ -66,21 +64,28 @@ namespace SkiaCarForms
             animationIsActive = false;
         }
 
+        private void update(SKCanvas canvas)
+        {
+            car.Update();
+
+            canvas.Clear(SKColors.LightGray);
+            
+            canvas.Save();
+            canvas.Translate(0, - car.Y + this.Height * 0.7f);
+            
+            road.Draw(canvas);
+            car.Draw(canvas);
+
+            canvas.Restore();
+            
+            dashboard.Draw(canvas);
+        }
 
         private void skglControl_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintGLSurfaceEventArgs e)
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-
-
-            canvas.Clear(SKColors.LightGray);
-            _isFirstPainting = false;
-
-            car.Update();
-            car.Draw(canvas);
-
-            dashboard.Draw(canvas);
-
+            update(canvas);
         }
     }
 }
