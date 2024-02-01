@@ -55,7 +55,7 @@ namespace SkiaCarForms
             while (animationIsActive)
             {
                 skglControl.Invalidate();
-                await Task.Delay(TimeSpan.FromSeconds(1.0 / 60));
+                await Task.Delay(TimeSpan.FromSeconds(1.5 / 60));
             }
 
             stopwatch.Stop();

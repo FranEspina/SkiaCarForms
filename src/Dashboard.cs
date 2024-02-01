@@ -31,8 +31,7 @@ namespace SkiaCarForms
 
             drawText(canvas, this.x, this.y + 1 * textSize, textPos, textSize);
             drawText(canvas, this.x, this.y + 2 * textSize, Car.Speed.ToString(), textSize);
-
-
+            drawText(canvas, this.x, this.y + 3 * textSize, Car.Angle.ToString(), textSize);
         }
 
         private void drawText(SKCanvas canvas, float x, float y, string text, float textSize)

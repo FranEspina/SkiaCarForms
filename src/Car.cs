@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +15,15 @@ namespace SkiaCarForms
         public float Height { get; set; }
         public float Width { get; set; }
         public float Speed { get; internal set; }
-        public float Acceleration { get; set; } = 0.3f;
-        public float MaxSpeed { get; set; } = 3f;
-        public float MaxReverseSpeed { get; set; } = 1.5f;
+        public float Acceleration { get; set; } = 0.5f;
+        public float MaxSpeed { get; set; } = 10f;
+        public float MaxReverseSpeed { get; set; } = 3f;
 
-        public float Friction { get; set; } = 0.1f;
+        public float Friction { get; set; } = 0.2f;
 
+        private float rotationEffect = 0.06f;
 
-
+        public float Angle { get; internal set; } = 0f;
 
         public Controls? Controls { get; set; }
 
@@ -35,6 +37,11 @@ namespace SkiaCarForms
         }
 
         public void Update()
+        {
+            move();
+        }
+
+        private void move()
         {
             if (Controls == null) return;
 
@@ -58,33 +65,64 @@ namespace SkiaCarForms
             }
 
             if (this.Speed > this.MaxSpeed) this.Speed = this.MaxSpeed;
-            if (this.Speed < - this.MaxReverseSpeed) this.Speed = - this.MaxReverseSpeed;
+            if (this.Speed < -this.MaxReverseSpeed) this.Speed = -this.MaxReverseSpeed;
 
-            if ( Math.Abs(this.Speed) < this.Friction)
+            if (Math.Abs(this.Speed) < this.Friction)
             {
-                this.Speed = 0; 
+                this.Speed = 0;
             }
 
-            this.Y -= this.Speed;
+            if (Speed != 0)
+            {
+                var flip = (this.Speed > 0) ? 1 : -1;
+
+                if (Controls.Left)
+                {
+                    this.Angle += this.rotationEffect * flip;
+                }
+                if (Controls.Right)
+                {
+                    this.Angle -= this.rotationEffect * flip;
+                }
+
+                this.X -= (float)Math.Sin(Angle) * this.Speed;
+                this.Y -= (float)Math.Cos(Angle) * this.Speed;
+            }
         }
 
         public void Draw(SKCanvas canvas)
         {
             SKPaint paint = new SKPaint
             {
-                Color = SKColors.Black,
-                Style = SKPaintStyle.Fill
+                Color = SKColors.DarkSlateBlue,
+                Style = SKPaintStyle.Fill, 
+                IsAntialias = true,
             };
 
-            // Define las dimensiones del rectángulo
+            canvas.Save();
+            canvas.Translate(this.X, this.Y);
+            canvas.RotateRadians(-this.Angle);
+            
             var rect = new SKRect(
-                this.X - this.Width / 2, 
-                this.Y - this.Height / 2,
-                this.X + this.Width / 2,
-                this.Y + this.Height / 2);
+                - this.Width / 2, 
+                - this.Height / 2,
+                this.Width / 2,
+                this.Height / 2);
+
 
             // Dibuja el rectángulo en el canvas
             canvas.DrawRect(rect, paint);
+
+            paint.Color = SKColors.White;
+            var windowCar = new SKRect(
+                            rect.Left + 5f,
+                            rect.Top + 5f,
+                            rect.Right - 5f,
+                            rect.Top + rect.Height * 0.3f);
+
+            canvas.DrawRect(windowCar, paint);
+
+            canvas.Restore();
         }
     }
 }
