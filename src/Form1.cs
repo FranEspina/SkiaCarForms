@@ -38,9 +38,7 @@ namespace SkiaCarForms
 
             car = new Car(centerLaneRoad, this.Height - 150 , 30, 50);
             car.Controls = controls;
-
-            sensor = new Sensor(car);
-            
+            car.Borders = road.Borders;           
             
             dashboard = new Dashboard(10, 10);
             dashboard.Car = car;

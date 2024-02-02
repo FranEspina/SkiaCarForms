@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,38 @@ namespace SkiaCarForms
         public static float Lerp(float x, float y, float t)
         {
             return x + (y - x) * t; 
-        }    
+        }
+
+        /// <summary>
+        /// Functión que devuelve la intersección entre dos segmentos [A, B] y [C, D]
+        /// </summary>
+        /// <param name="A">Punto inicio del primer segmento</param>
+        /// <param name="B">Punto fin del primer segmento</param>
+        /// <param name="C">Punto inicio del segundo segmento</param>
+        /// <param name="D">Punto fin del segundo segmento</param>
+        /// <returns>Si los segmentos se corta devuelve las coordenadas del punto y la distancia de la intersección. Nulo en otro caso.</returns>
+        public static IntersectionPoint? GetIntesection(SKPoint A, SKPoint B, SKPoint C, SKPoint D )
+        {
+            var tTop= (D.X - C.X) * (A.Y - C.Y) - (D.Y - C.Y) * (A.X - C.X);
+            var uTop= (C.Y - A.Y) * (A.X - B.X) - (C.X - A.X) * (A.Y - B.Y);
+            var bottom= (D.Y - C.Y) * (B.X - A.X) - (D.X - C.X) * (B.Y - A.Y);
+
+            if (bottom != 0)
+            {
+                var t = tTop / bottom;
+                var u = uTop / bottom;
+                if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
+                {
+                    return new IntersectionPoint(
+                            Lerp(A.X, B.X, t),
+                            Lerp(A.Y, B.Y, t),
+                            t
+
+                        );
+                }
+            }
+
+            return null;
+        }
     }
 }

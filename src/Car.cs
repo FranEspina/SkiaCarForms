@@ -26,6 +26,7 @@ namespace SkiaCarForms
         public float Angle { get; internal set; } = 0f;
 
         public Controls? Controls { get; set; }
+        public SKPoint[][]? Borders { get; set; }
 
         private readonly Sensor? sensor;
 
