@@ -27,6 +27,8 @@ namespace SkiaCarForms
 
         public Controls? Controls { get; set; }
 
+        private readonly Sensor? sensor;
+
         public Car(float x, float y, float width, float height) { 
             this.X = x;
             this.Y = y;
@@ -34,11 +36,13 @@ namespace SkiaCarForms
             this.Width = width;
 
             this.Controls = default(Controls);
+            this.sensor = new Sensor(this);
         }
 
         public void Update()
         {
             move();
+            if (sensor != null) sensor.Update();
         }
 
         private void move()
@@ -123,6 +127,9 @@ namespace SkiaCarForms
             canvas.DrawRect(windowCar, paint);
 
             canvas.Restore();
+
+            if (sensor != null) sensor.Draw(canvas);
+
         }
     }
 }

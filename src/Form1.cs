@@ -13,6 +13,7 @@ namespace SkiaCarForms
         private Car car;
         private Dashboard dashboard;
         private Road road;
+        private Sensor sensor;
 
         public Form1()
         {
@@ -37,6 +38,9 @@ namespace SkiaCarForms
 
             car = new Car(centerLaneRoad, this.Height - 150 , 30, 50);
             car.Controls = controls;
+
+            sensor = new Sensor(car);
+            
             
             dashboard = new Dashboard(10, 10);
             dashboard.Car = car;
@@ -64,20 +68,25 @@ namespace SkiaCarForms
             animationIsActive = false;
         }
 
-        private void update(SKCanvas canvas)
+        private void update()
         {
             car.Update();
+        }
+
+        private void draw(SKCanvas canvas)
+        {
+
 
             canvas.Clear(SKColors.LightGray);
-            
+
             canvas.Save();
-            canvas.Translate(0, - car.Y + this.Height * 0.7f);
-            
+            canvas.Translate(0, -car.Y + this.Height * 0.7f);
+
             road.Draw(canvas);
             car.Draw(canvas);
 
             canvas.Restore();
-            
+
             dashboard.Draw(canvas);
         }
 
@@ -85,7 +94,8 @@ namespace SkiaCarForms
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-            update(canvas);
+            update();
+            draw(canvas);
         }
     }
 }
