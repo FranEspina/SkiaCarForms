@@ -14,8 +14,8 @@ namespace SkiaCarForms
     {
         private readonly Car car;
         private readonly int rayCount = 5;
-        private readonly float rayLength = 100f;
-        private readonly float raySpread = (float)  Math.PI / 4;
+        private readonly float rayLength = 120f;
+        private readonly float raySpread = (float)  Math.PI / 2;
         private SKPoint[][] rays = [];
         private IntersectionPoint?[] readings;
         private SKPoint[][]? borders

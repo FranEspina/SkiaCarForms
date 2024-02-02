@@ -57,5 +57,24 @@ namespace SkiaCarForms
         {
             return MathF.Sqrt(leg * leg + otherLeg * otherLeg);
         }
+
+        public static bool IsPolyIntersect(SKPoint[] poly1, SKPoint[] poly2)
+        {
+            for (int i = 0; i < poly1.Length; i++)
+            {
+                var A = poly1[i % poly1.Length];
+                var B = poly1[(i + 1) % poly1.Length];
+                
+                for (int j = 0; j < poly2.Length; j++)
+                {
+                    var C = poly2[j % poly2.Length];
+                    var D = poly2[(j + 1) % poly2.Length];
+
+                    if (GetIntesection(A, B, C, D) != null)
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 }

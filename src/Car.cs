@@ -30,21 +30,23 @@ namespace SkiaCarForms
 
         private readonly Sensor? sensor;
 
-        private SKPoint[] points;
+        private SKPoint[] shapePolygon;
+
+        private bool damaged = false;
 
         public Car(float x, float y, float width, float height) { 
             this.X = x;
             this.Y = y;
             this.Height = height;
             this.Width = width;
-
             this.Controls = default(Controls);
             this.sensor = new Sensor(this);
+            this.shapePolygon = [];
         }
 
         private void createPolygon()
         {
-            this.points = new SKPoint[4];
+            this.shapePolygon = new SKPoint[4];
             float x = 0;
             float y = 0;
 
@@ -53,27 +55,44 @@ namespace SkiaCarForms
 
             x = this.X + radious * MathF.Sin(alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(alpha - this.Angle);
-            this.points[0] = new SKPoint(x, y);
+            this.shapePolygon[0] = new SKPoint(x, y);
 
             x = this.X + radious * MathF.Sin(-alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(-alpha - this.Angle);
-            this.points[1] = new SKPoint(x, y);
+            this.shapePolygon[1] = new SKPoint(x, y);
 
             x = this.X + radious * MathF.Sin(MathF.PI + alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(MathF.PI + alpha - this.Angle);
-            this.points[2] = new SKPoint(x, y);
+            this.shapePolygon[2] = new SKPoint(x, y);
 
             x = this.X + radious * MathF.Sin(MathF.PI - alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(MathF.PI - alpha - this.Angle);
-            this.points[3] = new SKPoint(x, y);
+            this.shapePolygon[3] = new SKPoint(x, y);
 
         }
 
         public void Update()
         {
-            move();
-            createPolygon();
-            sensor?.Update();
+            if (!this.damaged)
+            {
+                move();
+                createPolygon();
+                this.damaged = assessDamage();
+                sensor?.Update();
+            }
+        }
+
+        private bool assessDamage()
+        {
+            if (this.Borders == null) return false;
+
+            foreach (var border in this.Borders)
+            {
+                if (Utils.IsPolyIntersect(this.shapePolygon, border))
+                    return true;
+            }
+
+            return false;
         }
 
         private void move()
@@ -135,17 +154,17 @@ namespace SkiaCarForms
         {
             SKPaint paint = new SKPaint
             {
-                Color = SKColors.DarkSlateBlue,
+                Color = (this.damaged) ? SKColors.Red : SKColors.DarkSlateBlue,
                 Style = SKPaintStyle.StrokeAndFill,
                 IsAntialias = true,
             };
 
             var path = new SKPath();
-            path.MoveTo(points[0].X, points[0].Y);
-            for (int i = 1; i <= points.Length; i++)
+            path.MoveTo(shapePolygon[0].X, shapePolygon[0].Y);
+            for (int i = 1; i <= shapePolygon.Length; i++)
             {
-                var index = i % points.Length;
-                path.LineTo(points[index].X, points[index].Y);
+                var index = i % shapePolygon.Length;
+                path.LineTo(shapePolygon[index].X, shapePolygon[index].Y);
             }
             canvas.DrawPath(path, paint);
         }
