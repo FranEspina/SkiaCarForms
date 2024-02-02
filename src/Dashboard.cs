@@ -2,8 +2,10 @@
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SkiaCarForms
@@ -27,11 +29,11 @@ namespace SkiaCarForms
 
             float textSize = 25;
 
-            var textPos = $"({Car.X}, {Car.Y})";
+            var textPos = $"({getFloatToString(Car.X)}, {getFloatToString(Car.Y)})";
 
             drawText(canvas, this.x, this.y + 1 * textSize, textPos, textSize);
-            drawText(canvas, this.x, this.y + 2 * textSize, Car.Speed.ToString(), textSize);
-            drawText(canvas, this.x, this.y + 3 * textSize, Car.Angle.ToString(), textSize);
+            drawText(canvas, this.x, this.y + 2 * textSize, getFloatToString(Car.Speed), textSize);
+            drawText(canvas, this.x, this.y + 3 * textSize, getFloatToString(Car.Angle), textSize);
         }
 
         private void drawText(SKCanvas canvas, float x, float y, string text, float textSize)
@@ -45,6 +47,12 @@ namespace SkiaCarForms
             };
 
             canvas.DrawText(text, x, y, paint);
+        }
+
+        private string getFloatToString(float number)
+        {
+            return Math.Round(number, 3).ToString("F2",
+                  CultureInfo.CreateSpecificCulture("es-ES"));
         }
     }
 }
