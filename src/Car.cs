@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SkiaCarForms.Enums;
 
 namespace SkiaCarForms
 {
@@ -30,23 +31,45 @@ namespace SkiaCarForms
 
         private readonly Sensor? sensor;
 
-        private SKPoint[] shapePolygon;
+        public SKPoint[] ShapePolygon { get; internal set; }
 
         private bool damaged = false;
 
-        public Car(float x, float y, float width, float height) { 
+        public List<Car> Traffics { get; set; }
+
+        public CarTypeEnum Type { get; internal set; }
+
+        public Car(float x, float y, float width, float height, CarTypeEnum type) { 
             this.X = x;
             this.Y = y;
             this.Height = height;
             this.Width = width;
             this.Controls = default(Controls);
-            this.sensor = new Sensor(this);
-            this.shapePolygon = [];
+            this.ShapePolygon = [];
+            this.Type = type;
+            this.Traffics = [];
+
+            if (type == CarTypeEnum.Traffic)
+                InitializeTraffic();
+
+            if (type == CarTypeEnum.Controled)
+                this.sensor = new Sensor(this);
+
+        }
+
+        private void InitializeTraffic()
+        {
+            if (Type != CarTypeEnum.Traffic) return;
+
+            MaxSpeed = MaxSpeed * 0f;
+            Controls = new Controls();
+            Controls.Forward = true;
+
         }
 
         private void createPolygon()
         {
-            this.shapePolygon = new SKPoint[4];
+            this.ShapePolygon = new SKPoint[4];
             float x = 0;
             float y = 0;
 
@@ -55,19 +78,19 @@ namespace SkiaCarForms
 
             x = this.X + radious * MathF.Sin(alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(alpha - this.Angle);
-            this.shapePolygon[0] = new SKPoint(x, y);
+            this.ShapePolygon[0] = new SKPoint(x, y);
 
             x = this.X + radious * MathF.Sin(-alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(-alpha - this.Angle);
-            this.shapePolygon[1] = new SKPoint(x, y);
+            this.ShapePolygon[1] = new SKPoint(x, y);
 
             x = this.X + radious * MathF.Sin(MathF.PI + alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(MathF.PI + alpha - this.Angle);
-            this.shapePolygon[2] = new SKPoint(x, y);
+            this.ShapePolygon[2] = new SKPoint(x, y);
 
             x = this.X + radious * MathF.Sin(MathF.PI - alpha - this.Angle);
             y = this.Y - radious * MathF.Cos(MathF.PI - alpha - this.Angle);
-            this.shapePolygon[3] = new SKPoint(x, y);
+            this.ShapePolygon[3] = new SKPoint(x, y);
 
         }
 
@@ -88,8 +111,17 @@ namespace SkiaCarForms
 
             foreach (var border in this.Borders)
             {
-                if (Utils.IsPolyIntersect(this.shapePolygon, border))
+                if (Utils.IsPolyIntersect(this.ShapePolygon, border))
                     return true;
+            }
+
+            if (this.Traffics != null)
+            {
+                foreach(var traffic in this.Traffics)
+                {
+                    if (Utils.IsPolyIntersect(this.ShapePolygon, traffic.ShapePolygon))
+                        return true;
+                }
             }
 
             return false;
@@ -152,19 +184,21 @@ namespace SkiaCarForms
 
         private void drawShape(SKCanvas canvas)
         {
+            var color = (Type == CarTypeEnum.Traffic) ? SKColors.Green : SKColors.DarkSlateBlue;
+
             SKPaint paint = new SKPaint
             {
-                Color = (this.damaged) ? SKColors.Red : SKColors.DarkSlateBlue,
+                Color = (this.damaged) ? SKColors.Red : color,
                 Style = SKPaintStyle.StrokeAndFill,
                 IsAntialias = true,
             };
 
             var path = new SKPath();
-            path.MoveTo(shapePolygon[0].X, shapePolygon[0].Y);
-            for (int i = 1; i <= shapePolygon.Length; i++)
+            path.MoveTo(ShapePolygon[0].X, ShapePolygon[0].Y);
+            for (int i = 1; i <= ShapePolygon.Length; i++)
             {
-                var index = i % shapePolygon.Length;
-                path.LineTo(shapePolygon[index].X, shapePolygon[index].Y);
+                var index = i % ShapePolygon.Length;
+                path.LineTo(ShapePolygon[index].X, ShapePolygon[index].Y);
             }
             canvas.DrawPath(path, paint);
         }

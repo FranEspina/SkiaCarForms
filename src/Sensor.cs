@@ -26,6 +26,14 @@ namespace SkiaCarForms
             }
         }
 
+        private List<Car>? traffics
+        {
+            get
+            {
+                return car.Traffics;
+            }
+        }
+
         public Sensor(Car car) {
             this.car = car;
             this.readings = [];
@@ -58,6 +66,12 @@ namespace SkiaCarForms
                     ray[0], ray[1], 
                     border[0], border[1]);
 
+                if (touche != null) touches.Add(touche);
+            });
+
+            this.traffics?.ForEach(traffic =>
+            {
+                var touche = Utils.PolyIntersect(ray, traffic.ShapePolygon);
                 if (touche != null) touches.Add(touche);
             });
 
