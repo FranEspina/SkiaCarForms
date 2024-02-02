@@ -127,7 +127,12 @@ namespace SkiaCarForms
 
         public void Draw(SKCanvas canvas)
         {
+            drawShape(canvas);
+            sensor?.Draw(canvas);
+        }
 
+        private void drawShape(SKCanvas canvas)
+        {
             SKPaint paint = new SKPaint
             {
                 Color = SKColors.DarkSlateBlue,
@@ -143,9 +148,6 @@ namespace SkiaCarForms
                 path.LineTo(points[index].X, points[index].Y);
             }
             canvas.DrawPath(path, paint);
-
-            if (sensor != null) 
-                sensor.Draw(canvas);
         }
     }
 }
