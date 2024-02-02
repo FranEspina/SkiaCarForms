@@ -30,6 +30,8 @@ namespace SkiaCarForms
 
         private readonly Sensor? sensor;
 
+        private SKPoint[] points;
+
         public Car(float x, float y, float width, float height) { 
             this.X = x;
             this.Y = y;
@@ -40,10 +42,38 @@ namespace SkiaCarForms
             this.sensor = new Sensor(this);
         }
 
+        private void createPolygon()
+        {
+            this.points = new SKPoint[4];
+            float x = 0;
+            float y = 0;
+
+            var radious = Utils.Hypotenuse(this.Height, this.Width) / 2f;
+            var alpha = MathF.Atan2(this.Width, this.Height);
+
+            x = this.X + radious * MathF.Sin(alpha - this.Angle);
+            y = this.Y - radious * MathF.Cos(alpha - this.Angle);
+            this.points[0] = new SKPoint(x, y);
+
+            x = this.X + radious * MathF.Sin(-alpha - this.Angle);
+            y = this.Y - radious * MathF.Cos(-alpha - this.Angle);
+            this.points[1] = new SKPoint(x, y);
+
+            x = this.X + radious * MathF.Sin(MathF.PI + alpha - this.Angle);
+            y = this.Y - radious * MathF.Cos(MathF.PI + alpha - this.Angle);
+            this.points[2] = new SKPoint(x, y);
+
+            x = this.X + radious * MathF.Sin(MathF.PI - alpha - this.Angle);
+            y = this.Y - radious * MathF.Cos(MathF.PI - alpha - this.Angle);
+            this.points[3] = new SKPoint(x, y);
+
+        }
+
         public void Update()
         {
             move();
-            if (sensor != null) sensor.Update();
+            createPolygon();
+            sensor?.Update();
         }
 
         private void move()
@@ -97,40 +127,25 @@ namespace SkiaCarForms
 
         public void Draw(SKCanvas canvas)
         {
+
             SKPaint paint = new SKPaint
             {
                 Color = SKColors.DarkSlateBlue,
-                Style = SKPaintStyle.Fill, 
+                Style = SKPaintStyle.StrokeAndFill,
                 IsAntialias = true,
             };
 
-            canvas.Save();
-            canvas.Translate(this.X, this.Y);
-            canvas.RotateRadians(-this.Angle);
-            
-            var rect = new SKRect(
-                - this.Width / 2, 
-                - this.Height / 2,
-                this.Width / 2,
-                this.Height / 2);
+            var path = new SKPath();
+            path.MoveTo(points[0].X, points[0].Y);
+            for (int i = 1; i <= points.Length; i++)
+            {
+                var index = i % points.Length;
+                path.LineTo(points[index].X, points[index].Y);
+            }
+            canvas.DrawPath(path, paint);
 
-
-            // Dibuja el rectángulo en el canvas
-            canvas.DrawRect(rect, paint);
-
-            paint.Color = SKColors.White;
-            var windowCar = new SKRect(
-                            rect.Left + 5f,
-                            rect.Top + 5f,
-                            rect.Right - 5f,
-                            rect.Top + rect.Height * 0.3f);
-
-            canvas.DrawRect(windowCar, paint);
-
-            canvas.Restore();
-
-            if (sensor != null) sensor.Draw(canvas);
-
+            if (sensor != null) 
+                sensor.Draw(canvas);
         }
     }
 }

@@ -52,5 +52,10 @@ namespace SkiaCarForms
 
             return null;
         }
+
+        public static float Hypotenuse(float leg, float otherLeg)
+        {
+            return MathF.Sqrt(leg * leg + otherLeg * otherLeg);
+        }
     }
 }
