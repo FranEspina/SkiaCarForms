@@ -15,7 +15,9 @@ namespace SkiaCarForms
         public Car? Car { set; internal get; }
 
         private float x;
-        private float y;    
+        private float y;
+
+        public bool MustDraw { get; set; } = true;
 
         public Dashboard(float x, float y)
         {
@@ -26,6 +28,7 @@ namespace SkiaCarForms
         public void Draw(SKCanvas canvas)
         {
             if (Car == null) return;
+            if (!MustDraw) return;
 
             float textSize = 25;
 

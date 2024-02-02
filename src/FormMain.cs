@@ -4,7 +4,7 @@ using static SkiaCarForms.Enums;
 
 namespace SkiaCarForms
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
 
         private readonly Stopwatch stopwatch = new Stopwatch();
@@ -17,10 +17,20 @@ namespace SkiaCarForms
         private Sensor sensor;
         private List<Car> traffics;
 
-        public Form1()
+        public FormMain()
         {
             InitializeComponent();
 
+            InitializeObjects();
+
+            animationIsActive = true;
+
+            AnimationLoop();
+
+        }
+
+        private void InitializeObjects()
+        {
             InitializeSizeCanvas();
 
             road = new Road(skglControl.Width / 2, skglControl.Width * 0.9f);
@@ -28,9 +38,9 @@ namespace SkiaCarForms
 
             InitializeTraffic();
 
-            car = new Car(centerLaneRoad, this.Height - 150 , 30, 50, CarTypeEnum.Controled);
-            car.Borders = road.Borders;           
-            
+            car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.Controled);
+            car.Borders = road.Borders;
+
             var controls = new Controls();
             this.KeyPreview = true;
             this.KeyDown += controls.EventHandlerKeyDown;
@@ -39,13 +49,8 @@ namespace SkiaCarForms
             car.Traffics = this.traffics;
 
             dashboard = new Dashboard(10, 10);
+            dashboard.MustDraw = ChkDashboard.Checked;
             dashboard.Car = car;
-
-            animationIsActive = true;
-
-
-            AnimationLoop();
-
         }
 
         private void InitializeTraffic()
@@ -53,9 +58,9 @@ namespace SkiaCarForms
             var posLane = road.GetLaneCenter(2);
 
             this.traffics = new List<Car>();
-            this.traffics.Add (
+            this.traffics.Add(
                 new Car(posLane, this.Height * 0.3f, 30, 50, CarTypeEnum.Traffic));
-            
+
         }
 
         private void InitializeSizeCanvas()
@@ -118,6 +123,16 @@ namespace SkiaCarForms
             var canvas = surface.Canvas;
             update();
             draw(canvas);
+        }
+
+        private void BtnReset_Click(object sender, EventArgs e)
+        {
+            InitializeObjects();
+        }
+
+        private void ChkDashboard_CheckedChanged(object sender, EventArgs e)
+        {
+            dashboard.MustDraw = ChkDashboard.Checked;
         }
     }
 }
