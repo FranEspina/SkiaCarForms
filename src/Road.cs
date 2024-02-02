@@ -19,7 +19,6 @@ namespace SkiaCarForms
         private float bottom;
         private readonly float INFINITY = 100000;
         private readonly int laneStrokeWidth = 5;
-        private bool unavez = false;
 
         public SKPoint[][] Borders { get; private set; }
 
