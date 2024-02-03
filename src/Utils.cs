@@ -82,5 +82,46 @@ namespace SkiaCarForms
             }
             return default(IntersectionPoint);
         }
+
+        public static SKBitmap GetTintedImage(string source, float width, float height, SKColor color)
+        {
+            var bm = SKBitmap.Decode(source)
+                .Resize(new SKSizeI((int) width, (int) height), SKFilterQuality.Low);
+
+            return Utils.GetTintedImage(bm, color);
+        }
+
+        public static SKBitmap GetTintedImage(SKBitmap bm, SKColor color)
+        {
+            // Create a new bitmap to hold the tinted image
+            var tintedBm = new SKBitmap(bm.Width, bm.Height, bm.ColorType, bm.AlphaType);
+
+            // Iterate over each pixel in the original bitmap
+            for (int y = 0; y < bm.Height; y++)
+            {
+                for (int x = 0; x < bm.Width; x++)
+                {
+                    // Get the original color
+                    var origColor = bm.GetPixel(x, y);
+
+                    // If the pixel is not transparent, tint it
+                    if (origColor.Alpha != 0)
+                    {
+                        var r = (origColor.Red + color.Red) / 2;
+                        var g = (origColor.Green + color.Green) / 2;
+                        var b = (origColor.Blue + color.Blue) / 2;
+                        var a = origColor.Alpha;
+
+                        tintedBm.SetPixel(x, y, new SKColor((byte)r, (byte)g, (byte)b, a));
+                    }
+                    else
+                    {
+                        // Otherwise, keep the original color
+                        tintedBm.SetPixel(x, y, origColor);
+                    }
+                }
+            }
+            return tintedBm;
+        }
     }
 }

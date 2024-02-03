@@ -184,23 +184,22 @@ namespace SkiaCarForms
 
         private void drawShape(SKCanvas canvas)
         {
-            var color = (Type == CarTypeEnum.Traffic) ? SKColors.Green : SKColors.DarkSlateBlue;
+            var color = (Type == CarTypeEnum.Traffic) ? SKColors.DarkRed : SKColors.DarkBlue;
+            var colorApplied = (this.damaged) ? SKColors.Transparent : color;
 
-            SKPaint paint = new SKPaint
-            {
-                Color = (this.damaged) ? SKColors.Red : color,
-                Style = SKPaintStyle.StrokeAndFill,
-                IsAntialias = true,
-            };
+            canvas.Save();
+            canvas.Translate(this.X, this.Y);
+            canvas.RotateRadians(-this.Angle);
 
-            var path = new SKPath();
-            path.MoveTo(ShapePolygon[0].X, ShapePolygon[0].Y);
-            for (int i = 1; i <= ShapePolygon.Length; i++)
+            var tintedBm = Utils.GetTintedImage("Car.png", (int) this.Width, (int) this.Height, colorApplied);
+
+            using (var paint = new SKPaint())
             {
-                var index = i % ShapePolygon.Length;
-                path.LineTo(ShapePolygon[index].X, ShapePolygon[index].Y);
+                paint.IsAntialias = true;
+                canvas.DrawBitmap(tintedBm, -this.Width / 2, -this.Height / 2, paint);
             }
-            canvas.DrawPath(path, paint);
+
+            canvas.Restore();
         }
     }
 }
