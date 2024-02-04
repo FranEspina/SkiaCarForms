@@ -38,10 +38,10 @@
             // skglControl
             // 
             skglControl.BackColor = Color.Black;
-            skglControl.Location = new Point(220, 10);
-            skglControl.Margin = new Padding(4);
+            skglControl.Location = new Point(251, 13);
+            skglControl.Margin = new Padding(5, 5, 5, 5);
             skglControl.Name = "skglControl";
-            skglControl.Size = new Size(186, 390);
+            skglControl.Size = new Size(213, 520);
             skglControl.TabIndex = 0;
             skglControl.VSync = true;
             skglControl.PaintSurface += skglControl_PaintSurface;
@@ -54,9 +54,10 @@
             // BtnReset
             // 
             BtnReset.FlatStyle = FlatStyle.Flat;
-            BtnReset.Location = new Point(546, 348);
+            BtnReset.Location = new Point(624, 464);
+            BtnReset.Margin = new Padding(3, 4, 3, 4);
             BtnReset.Name = "BtnReset";
-            BtnReset.Size = new Size(126, 27);
+            BtnReset.Size = new Size(144, 36);
             BtnReset.TabIndex = 1;
             BtnReset.Text = "Reiniciar";
             BtnReset.UseVisualStyleBackColor = true;
@@ -65,9 +66,10 @@
             // ChkDashboard
             // 
             ChkDashboard.AutoSize = true;
-            ChkDashboard.Location = new Point(546, 381);
+            ChkDashboard.Location = new Point(624, 508);
+            ChkDashboard.Margin = new Padding(3, 4, 3, 4);
             ChkDashboard.Name = "ChkDashboard";
-            ChkDashboard.Size = new Size(126, 19);
+            ChkDashboard.Size = new Size(157, 24);
             ChkDashboard.TabIndex = 2;
             ChkDashboard.Text = "Mostrar dashboard";
             ChkDashboard.UseVisualStyleBackColor = true;
@@ -75,15 +77,15 @@
             // 
             // FormMain
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(684, 415);
+            ClientSize = new Size(782, 553);
             Controls.Add(ChkDashboard);
             Controls.Add(BtnReset);
             Controls.Add(skglControl);
-            Margin = new Padding(3, 2, 3, 2);
             Name = "FormMain";
             Text = "Form1";
+            Load += FormMain_Load;
             ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).EndInit();
             ResumeLayout(false);
             PerformLayout();

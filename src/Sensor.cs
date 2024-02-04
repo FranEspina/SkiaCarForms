@@ -121,14 +121,18 @@ namespace SkiaCarForms
                 var intersection = this.readings[i];
                 if (intersection == null)
                 {
-                    canvas.DrawLine(ray[0], ray[1], paint);
+
+                        canvas.DrawLine(ray[0], ray[1], paint); 
+                    
                 }
                 else
                 {
-                    var point = new SKPoint(intersection.X, intersection.Y);
-                    canvas.DrawLine(ray[0], point, paint);
-                    paint.Color = SKColors.Black;
-                    canvas.DrawLine(point, ray[1], paint);
+
+                        var point = new SKPoint(intersection.X, intersection.Y);
+                        canvas.DrawLine(ray[0], point, paint);
+                        paint.Color = SKColors.Black;
+                        canvas.DrawLine(point, ray[1], paint); 
+                    
                 }
             }
 

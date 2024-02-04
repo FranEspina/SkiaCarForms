@@ -49,7 +49,8 @@ namespace SkiaCarForms
                 Style = SKPaintStyle.Fill
             };
 
-            canvas.DrawText(text, x, y, paint);
+                canvas.DrawText(text, x, y, paint); 
+            
         }
 
         private string getFloatToString(float number)

@@ -2,6 +2,7 @@
 using SkiaSharp.Views.Desktop;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,6 @@ namespace SkiaCarForms
         public float Acceleration { get; set; } = 0.5f;
         public float MaxSpeed { get; set; } = 10f;
         public float MaxReverseSpeed { get; set; } = 3f;
-
         public float Friction { get; set; } = 0.2f;
 
         private float rotationEffect = 0.06f;
@@ -31,15 +31,23 @@ namespace SkiaCarForms
 
         private readonly Sensor? sensor;
 
+        private SKBitmap? carBitmap;
+
         public SKPoint[] ShapePolygon { get; internal set; }
 
         private bool damaged = false;
+        private object value;
+        private float v1;
+        private int v2;
+        private int v3;
+        private CarTypeEnum traffic;
+        private float factorSpeed;
 
         public List<Car> Traffics { get; set; }
 
         public CarTypeEnum Type { get; internal set; }
 
-        public Car(float x, float y, float width, float height, CarTypeEnum type) { 
+        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1) { 
             this.X = x;
             this.Y = y;
             this.Height = height;
@@ -55,16 +63,22 @@ namespace SkiaCarForms
             if (type == CarTypeEnum.Controled)
                 this.sensor = new Sensor(this);
 
+            MaxSpeed = MaxSpeed * maxSpeedFactor;
+
+        }
+
+        public void InitializeBitmap()
+        {
+            var color = (Type == CarTypeEnum.Traffic) ? SKColors.DarkRed : SKColors.DarkBlue;
+            this.carBitmap = Utils.GetTintedImage("Car.png", (int)this.Width, (int)this.Height, color);          
         }
 
         private void InitializeTraffic()
         {
             if (Type != CarTypeEnum.Traffic) return;
 
-            MaxSpeed = MaxSpeed * 0f;
             Controls = new Controls();
             Controls.Forward = true;
-
         }
 
         private void createPolygon()
@@ -182,24 +196,32 @@ namespace SkiaCarForms
             sensor?.Draw(canvas);
         }
 
+        public void Dispose()
+        {
+            this.carBitmap?.Dispose();
+            this.carBitmap = null;
+            this.Controls = null;
+            this.Borders = null;
+            this.ShapePolygon = [];
+        }
+
         private void drawShape(SKCanvas canvas)
         {
-            var color = (Type == CarTypeEnum.Traffic) ? SKColors.DarkRed : SKColors.DarkBlue;
-            var colorApplied = (this.damaged) ? SKColors.Transparent : color;
 
             canvas.Save();
             canvas.Translate(this.X, this.Y);
             canvas.RotateRadians(-this.Angle);
 
-            var tintedBm = Utils.GetTintedImage("Car.png", (int) this.Width, (int) this.Height, colorApplied);
-
-            using (var paint = new SKPaint())
+            using (var paint = new SKPaint { IsAntialias = true })
             {
-                paint.IsAntialias = true;
-                canvas.DrawBitmap(tintedBm, -this.Width / 2, -this.Height / 2, paint);
+                if (this.carBitmap != null)
+                {
+                    canvas.DrawBitmap(this.carBitmap, -this.Width / 2, -this.Height / 2, paint); 
+                }
             }
 
-            canvas.Restore();
+            canvas.Restore();  
+            
         }
     }
 }
