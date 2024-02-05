@@ -69,7 +69,8 @@ namespace SkiaCarForms
 
         public void InitializeBitmap()
         {
-            var color = (Type == CarTypeEnum.Traffic) ? SKColors.DarkRed : SKColors.DarkBlue;
+            var color = (Type == CarTypeEnum.Traffic) ? Utils.RandomSKColor() : SKColors.DarkBlue;
+
             this.carBitmap = Utils.GetTintedImage("Car.png", (int)this.Width, (int)this.Height, color);          
         }
 
@@ -211,8 +212,12 @@ namespace SkiaCarForms
             canvas.Save();
             canvas.Translate(this.X, this.Y);
             canvas.RotateRadians(-this.Angle);
-            
 
+            if (this.damaged)
+            {
+                this.carBitmap = Utils.GetTintedImage("Car.png", (int)this.Width, (int)this.Height, SKColors.DarkGray);
+            }
+            
             using (var paint = new SKPaint { IsAntialias = true })
             {
                 if (this.carBitmap != null)

@@ -83,6 +83,12 @@ namespace SkiaCarForms
             return default(IntersectionPoint);
         }
 
+        public static SKColor RandomSKColor()
+        {
+            Random random = new Random();
+            return new SKColor((byte)random.Next(256), (byte)random.Next(256), (byte)random.Next(256));
+        }
+
         public static SKBitmap GetTintedImage(string source, float width, float height, SKColor color)
         {
             var bm = SKBitmap.Decode(source)
