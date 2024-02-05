@@ -1,5 +1,6 @@
 using SkiaSharp;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using static SkiaCarForms.Enums;
 
@@ -7,6 +8,8 @@ namespace SkiaCarForms
 {
     public partial class FormMain : Form
     {
+
+        private readonly int TRAFFIC_COUNT = 10;
 
         private bool animationIsActive = false;
         private float scale = 0;
@@ -26,19 +29,10 @@ namespace SkiaCarForms
 
         private async void FormMain_Load(object sender, EventArgs e)
         {
-            try
-            {
-                await InitializeObjectsAsync();
+            await InitializeObjectsAsync();
 
-                animationIsActive = true;
-
-                await AnimationLoop();
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            animationIsActive = true;
+            await AnimationLoop();
         }
 
         private async Task InitializeObjectsAsync()
@@ -48,7 +42,7 @@ namespace SkiaCarForms
             road = new Road(skglControl.Width / 2, skglControl.Width * 0.9f);
             var centerLaneRoad = road.GetLaneCenter(2);
 
-            InitializeTraffic(20);
+            InitializeTraffic();
 
             car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.Controled);
             car.Borders = road.Borders;
@@ -81,12 +75,12 @@ namespace SkiaCarForms
             await Task.WhenAll(tasks);
         }
 
-        private List<Car> InitializeTraffic(int count)
+        private List<Car> InitializeTraffic()
         {
 
             this.traffics = new List<Car>();
 
-            for (int i = 1; i < count; i++)
+            for (int i = 1; i < this.TRAFFIC_COUNT; i++)
             {
                 var height = Utils.Lerp(0, 2f * this.Height, RandomNumberGenerator.GetInt32(1, 10) / 10f);
                 var number = RandomNumberGenerator.GetInt32(0, 5);
@@ -167,65 +161,22 @@ namespace SkiaCarForms
 
             road?.Draw(canvas);
 
-            foreach (var traffic in this.traffics)
-            {
-                traffic.Draw(canvas);
-            }
+            this.traffics.ForEach(traffic => traffic.Draw(canvas));
 
             car.Draw(canvas);
 
             canvas.Restore();
 
             dashboard?.Draw(canvas);
-        }
-
-        //No usar. SkiaSharp no es seguro para hilos. Y no funciona ni compartiendo objeto lock 
-        private async Task drawAsync(SKCanvas canvas)
-        {
-
-
-            canvas.Clear(SKColors.LightGray);
-
-            canvas.Save();
-            canvas.Translate(0, -car.Y + this.Height * 0.7f);
-
-            road?.Draw(canvas);
-
-            await drawTrafficAsync(canvas);
-
-            car.Draw(canvas);
-
-            canvas.Restore();
-
-            dashboard?.Draw(canvas);
-        }
-
-        //No usar. SkiaSharp no es seguro para hilos. Y no funciona ni compartiendo objeto lock 
-        private async Task drawTrafficAsync(SKCanvas canvas)
-        {
-            List<Task> tasks = new List<Task>();
-            foreach (var traffic in this.traffics)
-            {
-                tasks.Add(Task.Run(() => traffic.Draw(canvas)));
-            }
-            await Task.WhenAll(tasks);
         }
 
         private async void skglControl_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintGLSurfaceEventArgs e)
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-
-            try
-            {
-                await updateAsync();
-                await drawAsync(canvas);
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            
+            await updateAsync();
+            draw(canvas);            
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
