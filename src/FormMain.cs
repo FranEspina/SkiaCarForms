@@ -1,8 +1,10 @@
 using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using static SkiaCarForms.Enums;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SkiaCarForms
 {
@@ -19,7 +21,11 @@ namespace SkiaCarForms
         private Sensor? sensor;
         private List<Car> traffics;
         private bool userResetAnimation = false;
-        private float phaseDashLine = 0f;
+
+        private readonly string upArrow = "\u2191";    // Flecha hacia arriba
+        private readonly string leftArrow = "\u2190";  // Flecha hacia la izquierda
+        private readonly string rightArrow = "\u2192"; // Flecha hacia la derecha
+        private readonly string downArrow = "\u2193";  // Flecha hacia abajo
 
         public FormMain()
         {
@@ -60,11 +66,20 @@ namespace SkiaCarForms
                 car.Controls = controls;
             }
 
+            if (car.Brain != null)
+            {
+                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(0, upArrow);
+                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(1, leftArrow);
+                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(2, rightArrow);
+                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(3, downArrow);
+            }
+
             car.Traffics = this.traffics;
 
             dashboard = new Dashboard(10, 10);
             dashboard.MustDraw = ChkDashboard.Checked;
             dashboard.Car = car;
+
 
             await InitializeBitmapsAsync();
 
@@ -182,71 +197,7 @@ namespace SkiaCarForms
             dashboard?.Draw(canvas);
         }
 
-        private void drawNetworkCanvas(SKCanvas canvas)
-        {
-            canvas.Clear(SKColors.Black);
 
-
-            var level = car.Brain.Levels[0];
-            var sizeCanvas = canvas.DeviceClipBounds;
-
-            var levelHeight = 40f;
-            var margin = 20f;
-            var radious = 10f;
-            float spacing = sizeCanvas.Height - 2 * margin - car.Brain.Levels.Length * levelHeight;
-
-
-            using (var paint = new SKPaint {
-                IsAntialias = true, 
-                Color = SKColors.White, 
-                StrokeWidth = 1,
-                Style = SKPaintStyle.Stroke
-                
-            })
-            {
-
-                var levelSize = sizeCanvas.Width - 2 * margin - 2 * radious;
-                var left = margin + radious;
-                var right = margin + radious + levelSize;
-
-                float inputY = sizeCanvas.Height - margin - (levelHeight / 2);
-                for (int i=0; i < level.Inputs.Length; i++)
-                {
-                    float inputX = Utils.Lerp(left, right, (float) i / (float) (level.Inputs.Length - 1));
-                    canvas.DrawCircle(new SKPoint(inputX, inputY), radious, paint);
-                }
-
-                float outputY = margin + (levelHeight / 2);
-                for (int i = 0; i < level.Outputs.Length; i++)
-                {
-                    float outputX = Utils.Lerp(left, right, (float)i / (float)(level.Outputs.Length - 1));
-                    canvas.DrawCircle(new SKPoint(outputX, outputY), radious, paint);
-                }
-
-                phaseDashLine += 1;
-                paint.PathEffect = SKPathEffect.CreateDash(new float[] { 5, 2 }, phaseDashLine);
-                for (int i=0; i < level.Inputs.Length; i++)
-                {
-                    float inputX = Utils.Lerp(left, right, (float) i / (float)(level.Inputs.Length - 1));
-                    for (int j = 0; j < level.Outputs.Length; j++)
-                    {
-                        float outputX = Utils.Lerp(left, right, (float) j / (float)(level.Outputs.Length - 1));
-                        canvas.DrawLine(new SKPoint(inputX, inputY), new SKPoint(outputX, outputY), paint);
-                    }
-                }
-
-
-
-
-
-
-
-
-            }
-
-
-
-        }
 
         private async void skglControl_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintGLSurfaceEventArgs e)
         {
@@ -260,7 +211,7 @@ namespace SkiaCarForms
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-            drawNetworkCanvas(canvas);
+            Visualizer.DrawNetwork(canvas, car);
         }
 
         private void BtnReset_Click(object sender, EventArgs e)

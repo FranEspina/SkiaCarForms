@@ -11,6 +11,16 @@ namespace SkiaCarForms.Network
     internal class NeuronalNetwork
     {
         public Level[] Levels { get; private set; }
+
+        public float[] Outputs
+        {
+            get
+            {
+                if (Levels == null || Levels.Length == 0) return [];
+                return Levels[Levels.Length - 1].Outputs;
+            }
+        }
+
         public NeuronalNetwork(int[] neuronCounts)
         {
             this.Levels = new Level[neuronCounts.Length - 1];
@@ -22,16 +32,15 @@ namespace SkiaCarForms.Network
 
         }
 
-        public static float[] feedForward(float[] givenValues, NeuronalNetwork network)
+        public void feedForward(float[] givenValues)
         {
             var values = (float[]) givenValues.Clone();
 
-            for (int i = 0; i < network.Levels.Length; i++)
+            for (int i = 0; i < this.Levels.Length; i++)
             {
-                values = Level.feedForward(values, network.Levels[i]);
+                values = this.Levels[i].feedForward(values);
             }
-
-            return values;
+ 
         }
     }
 }

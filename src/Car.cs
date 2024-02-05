@@ -67,6 +67,7 @@ namespace SkiaCarForms
 
                 case CarTypeEnum.PlayerControled:
                     this.sensor = new Sensor(this);
+                    this.Brain = new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
                     break;
 
                 case CarTypeEnum.IAControled:
@@ -137,7 +138,8 @@ namespace SkiaCarForms
                             offsets[i] = (reading == null) ? 0 : 1 - reading.Offset;
                         }
 
-                        var outputs = NeuronalNetwork.feedForward(offsets, this.Brain);
+                        this.Brain.feedForward(offsets);
+                        var outputs = this.Brain.Outputs;
 
                         if (this.Type == CarTypeEnum.IAControled)
                         {
