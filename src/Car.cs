@@ -207,20 +207,28 @@ namespace SkiaCarForms
 
         private void drawShape(SKCanvas canvas)
         {
-
-            canvas.Save();
-            canvas.Translate(this.X, this.Y);
-            canvas.RotateRadians(-this.Angle);
+            lock (CanvasLock.Lock)
+            {
+                canvas.Save();
+                canvas.Translate(this.X, this.Y);
+                canvas.RotateRadians(-this.Angle);
+            }
 
             using (var paint = new SKPaint { IsAntialias = true })
             {
                 if (this.carBitmap != null)
                 {
-                    canvas.DrawBitmap(this.carBitmap, -this.Width / 2, -this.Height / 2, paint); 
+                    lock (CanvasLock.Lock)
+                    {
+                        canvas.DrawBitmap(this.carBitmap, -this.Width / 2, -this.Height / 2, paint);  
+                    }
                 }
             }
 
-            canvas.Restore();  
+            lock (CanvasLock.Lock)
+            {
+                canvas.Restore(); 
+            }  
             
         }
     }

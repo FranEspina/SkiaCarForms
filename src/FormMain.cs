@@ -10,7 +10,7 @@ namespace SkiaCarForms
 
         private bool animationIsActive = false;
         private float scale = 0;
-        private Car? car;
+        private Car car;
         private Dashboard? dashboard;
         private Road? road;
         private Sensor? sensor;
@@ -22,6 +22,23 @@ namespace SkiaCarForms
             InitializeComponent();
 
             this.traffics = new List<Car>();
+        }
+
+        private async void FormMain_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                await InitializeObjectsAsync();
+
+                animationIsActive = true;
+
+                await AnimationLoop();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         private async Task InitializeObjectsAsync()
@@ -148,8 +165,7 @@ namespace SkiaCarForms
             canvas.Save();
             canvas.Translate(0, -car.Y + this.Height * 0.7f);
 
-            road.Draw(canvas);
-
+            road?.Draw(canvas);
 
             foreach (var traffic in this.traffics)
             {
@@ -160,9 +176,31 @@ namespace SkiaCarForms
 
             canvas.Restore();
 
-            dashboard.Draw(canvas);
+            dashboard?.Draw(canvas);
         }
 
+        //No usar. SkiaSharp no es seguro para hilos. Y no funciona ni compartiendo objeto lock 
+        private async Task drawAsync(SKCanvas canvas)
+        {
+
+
+            canvas.Clear(SKColors.LightGray);
+
+            canvas.Save();
+            canvas.Translate(0, -car.Y + this.Height * 0.7f);
+
+            road?.Draw(canvas);
+
+            await drawTrafficAsync(canvas);
+
+            car.Draw(canvas);
+
+            canvas.Restore();
+
+            dashboard?.Draw(canvas);
+        }
+
+        //No usar. SkiaSharp no es seguro para hilos. Y no funciona ni compartiendo objeto lock 
         private async Task drawTrafficAsync(SKCanvas canvas)
         {
             List<Task> tasks = new List<Task>();
@@ -177,8 +215,17 @@ namespace SkiaCarForms
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-            await updateAsync();
-            draw(canvas);
+
+            try
+            {
+                await updateAsync();
+                await drawAsync(canvas);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
@@ -199,16 +246,9 @@ namespace SkiaCarForms
 
         private void ChkDashboard_CheckedChanged(object sender, EventArgs e)
         {
-            dashboard.MustDraw = ChkDashboard.Checked;
+            if (dashboard != null)
+                dashboard.MustDraw = ChkDashboard.Checked;
         }
 
-        private async void FormMain_Load(object sender, EventArgs e)
-        {
-            await InitializeObjectsAsync();
-
-            animationIsActive = true;
-
-            await AnimationLoop();
-        }
     }
 }

@@ -74,10 +74,12 @@ namespace SkiaCarForms
             {                
                 var x = Utils.Lerp(this.left, this.right, i / ((float) laneCount));
 
-
+                lock (CanvasLock.Lock)
+                {
                     canvas.DrawLine(x, this.top,
                             x, this.bottom,
                             paint); 
+                }
                 
             }
 
