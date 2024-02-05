@@ -32,16 +32,17 @@
             fileSystemWatcher1 = new FileSystemWatcher();
             BtnReset = new Button();
             ChkDashboard = new CheckBox();
+            skglNetworkControl = new SkiaSharp.Views.Desktop.SKGLControl();
             ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).BeginInit();
             SuspendLayout();
             // 
             // skglControl
             // 
             skglControl.BackColor = Color.Black;
-            skglControl.Location = new Point(251, 13);
-            skglControl.Margin = new Padding(5, 5, 5, 5);
+            skglControl.Location = new Point(60, 11);
+            skglControl.Margin = new Padding(4);
             skglControl.Name = "skglControl";
-            skglControl.Size = new Size(213, 520);
+            skglControl.Size = new Size(200, 538);
             skglControl.TabIndex = 0;
             skglControl.VSync = true;
             skglControl.PaintSurface += skglControl_PaintSurface;
@@ -54,10 +55,9 @@
             // BtnReset
             // 
             BtnReset.FlatStyle = FlatStyle.Flat;
-            BtnReset.Location = new Point(624, 464);
-            BtnReset.Margin = new Padding(3, 4, 3, 4);
+            BtnReset.Location = new Point(325, 522);
             BtnReset.Name = "BtnReset";
-            BtnReset.Size = new Size(144, 36);
+            BtnReset.Size = new Size(126, 27);
             BtnReset.TabIndex = 1;
             BtnReset.Text = "Reiniciar";
             BtnReset.UseVisualStyleBackColor = true;
@@ -66,25 +66,41 @@
             // ChkDashboard
             // 
             ChkDashboard.AutoSize = true;
-            ChkDashboard.Location = new Point(624, 508);
-            ChkDashboard.Margin = new Padding(3, 4, 3, 4);
+            ChkDashboard.Location = new Point(457, 527);
             ChkDashboard.Name = "ChkDashboard";
-            ChkDashboard.Size = new Size(157, 24);
+            ChkDashboard.Size = new Size(126, 19);
             ChkDashboard.TabIndex = 2;
             ChkDashboard.Text = "Mostrar dashboard";
             ChkDashboard.UseVisualStyleBackColor = true;
             ChkDashboard.CheckedChanged += ChkDashboard_CheckedChanged;
             // 
+            // skglNetworkControl
+            // 
+            skglNetworkControl.BackColor = Color.Black;
+            skglNetworkControl.Location = new Point(325, 11);
+            skglNetworkControl.Margin = new Padding(4, 3, 4, 3);
+            skglNetworkControl.Name = "skglNetworkControl";
+            skglNetworkControl.Size = new Size(277, 502);
+            skglNetworkControl.TabIndex = 3;
+            skglNetworkControl.VSync = true;
+            skglNetworkControl.PaintSurface += skglNetworkControl_PaintSurface;
+            // 
             // FormMain
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(782, 553);
+            BackColor = SystemColors.Control;
+            ClientSize = new Size(615, 561);
+            Controls.Add(skglNetworkControl);
             Controls.Add(ChkDashboard);
             Controls.Add(BtnReset);
             Controls.Add(skglControl);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(3, 2, 3, 2);
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "FormMain";
-            Text = "Form1";
+            Text = "Skia Neuronal Network";
             Load += FormMain_Load;
             ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).EndInit();
             ResumeLayout(false);
@@ -97,5 +113,6 @@
         private FileSystemWatcher fileSystemWatcher1;
         private Button BtnReset;
         private CheckBox ChkDashboard;
+        private SkiaSharp.Views.Desktop.SKGLControl skglNetworkControl;
     }
 }

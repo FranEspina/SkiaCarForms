@@ -24,6 +24,10 @@ namespace SkiaCarForms
         {
             InitializeComponent();
 
+            this.BackColor = Color.DarkGray;
+            this.skglControl.Top = 0;
+            this.skglControl.Height = this.Height;
+
             this.traffics = new List<Car>();
         }
 
@@ -37,21 +41,24 @@ namespace SkiaCarForms
 
         private async Task InitializeObjectsAsync()
         {
-            InitializeSizeCanvas();
 
             road = new Road(skglControl.Width / 2, skglControl.Width * 0.9f);
             var centerLaneRoad = road.GetLaneCenter(2);
 
-            InitializeTraffic();
+            InitializeOneTraffic();
 
-            car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.Controled);
+            car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.IAControled);
             car.Borders = road.Borders;
 
-            var controls = new Controls();
-            this.KeyPreview = true;
-            this.KeyDown += controls.EventHandlerKeyDown;
-            this.KeyUp += controls.EventHandlerKeyUp;
-            car.Controls = controls;
+            if (car.Type != CarTypeEnum.IAControled)
+            {
+                var controls = new Controls();
+                this.KeyPreview = true;
+                this.KeyDown += controls.EventHandlerKeyDown;
+                this.KeyUp += controls.EventHandlerKeyUp;
+                car.Controls = controls;
+            }
+
             car.Traffics = this.traffics;
 
             dashboard = new Dashboard(10, 10);
@@ -75,14 +82,14 @@ namespace SkiaCarForms
             await Task.WhenAll(tasks);
         }
 
-        private List<Car> InitializeTraffic()
+        private List<Car> InitializeRandomTraffic()
         {
 
             this.traffics = new List<Car>();
 
             for (int i = 1; i < this.TRAFFIC_COUNT; i++)
             {
-                var height = Utils.Lerp(0, 2f * this.Height, RandomNumberGenerator.GetInt32(1, 10) / 10f);
+                var height = Utils.Lerp(0, 1f * this.Height, RandomNumberGenerator.GetInt32(1, 10) / 10f);
                 var number = RandomNumberGenerator.GetInt32(0, 5);
                 var posLane = road.GetLaneCenter(number);
                 var factorSpeed = Utils.Lerp(0.1f, 0.9f, RandomNumberGenerator.GetInt32(1, 10) / 10f);
@@ -96,6 +103,20 @@ namespace SkiaCarForms
 
         }
 
+        private void InitializeOneTraffic()
+        {
+
+            this.traffics = new List<Car>();
+
+            var height = this.Height;
+            var posLane = road.GetLaneCenter(2);
+            var factorSpeed = 0.5f;
+
+            this.traffics.Add(new Car(posLane, this.Height *0.3f, 30, 50, CarTypeEnum.Traffic, factorSpeed));
+
+        }
+
+
         private void DisposeTraffic()
         {
             foreach (var traffic in this.traffics)
@@ -107,24 +128,13 @@ namespace SkiaCarForms
             this.traffics.RemoveAll(p => p.Speed == 0);
         }
 
-        private void InitializeSizeCanvas()
-        {
-            this.BackColor = Color.DarkGray;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-
-            skglControl.Height = this.Height;
-            skglControl.Width = 200;
-            skglControl.Top = 0;
-            skglControl.Left = (this.Width / 2) - (skglControl.Width / 2);
-        }
-
         async Task AnimationLoop()
         {
 
             while (animationIsActive)
             {
                 skglControl.Invalidate();
+                skglNetworkControl.Invalidate();
                 await Task.Delay(TimeSpan.FromSeconds(1.5 / 60));
             }
 
@@ -140,9 +150,10 @@ namespace SkiaCarForms
         }
 
         private async Task updateAsync()
-        { 
+        {
             var tasks = new List<Task>();
-            traffics.ForEach(c => {
+            traffics.ForEach(c =>
+            {
                 tasks.Add(Task.Run(() => c.Update()));
             });
             await Task.WhenAll(tasks);
@@ -150,7 +161,7 @@ namespace SkiaCarForms
             car?.Update();
         }
 
-        private void draw(SKCanvas canvas)
+        private void drawCarCanvas(SKCanvas canvas)
         {
 
 
@@ -170,13 +181,24 @@ namespace SkiaCarForms
             dashboard?.Draw(canvas);
         }
 
+        private void drawNetworkCanvas(SKCanvas canvas)
+        {
+            //canvas.DrawArc(new SKRect())
+        }
+
         private async void skglControl_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintGLSurfaceEventArgs e)
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-            
+
             await updateAsync();
-            draw(canvas);            
+            drawCarCanvas(canvas);
+        }
+        private void skglNetworkControl_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintGLSurfaceEventArgs e)
+        {
+            var surface = e.Surface;
+            var canvas = surface.Canvas;
+            drawNetworkCanvas(canvas);
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
@@ -189,7 +211,7 @@ namespace SkiaCarForms
         {
             DisposeTraffic();
             await InitializeObjectsAsync();
-            
+
             animationIsActive = true;
             userResetAnimation = false;
             await AnimationLoop();

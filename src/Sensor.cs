@@ -13,11 +13,11 @@ namespace SkiaCarForms
     internal class Sensor
     {
         private readonly Car car;
-        private readonly int rayCount = 5;
+        public readonly int RayCount = 5;
         private readonly float rayLength = 120f;
         private readonly float raySpread = (float)  Math.PI / 2;
         private SKPoint[][] rays = [];
-        private IntersectionPoint?[] readings;
+        public IntersectionPoint?[] Readings;
         private SKPoint[][]? borders
         {
             get
@@ -36,7 +36,7 @@ namespace SkiaCarForms
 
         public Sensor(Car car) {
             this.car = car;
-            this.readings = [];
+            this.Readings = [];
         }
 
         public void Update()
@@ -48,8 +48,8 @@ namespace SkiaCarForms
 
         private void setReadings()
         {
-            this.readings = new IntersectionPoint[this.rayCount];
-            for (int i = 0; i < this.readings.Length; i++)
+            this.Readings = new IntersectionPoint[this.RayCount];
+            for (int i = 0; i < this.Readings.Length; i++)
             {
                 setReadings(this.rays[i], i);
             }
@@ -57,7 +57,7 @@ namespace SkiaCarForms
 
         private void setReadings(SKPoint[] ray, int rayIndex)
         {
-            this.readings[rayIndex] = default(IntersectionPoint);
+            this.Readings[rayIndex] = default(IntersectionPoint);
 
             var touches = new List<IntersectionPoint>();
             this.borders?.ToList().ForEach(border => {
@@ -78,18 +78,18 @@ namespace SkiaCarForms
             if (touches.Count > 0 )
             {
                 var nearIntersection = touches.MinBy(x => x.Offset);
-                this.readings[rayIndex] = nearIntersection;
+                this.Readings[rayIndex] = nearIntersection;
             }
         }
 
         private void castRays()
         {
-            this.rays = new SKPoint[rayCount][];
+            this.rays = new SKPoint[RayCount][];
             var start = new SKPoint(car.X, car.Y);
 
-            for (int i = 0; i < rayCount; i++)
+            for (int i = 0; i < RayCount; i++)
             {
-                var step = (this.rayCount == 1) ? 0.5f : (float)i / (rayCount - 1);
+                var step = (this.RayCount == 1) ? 0.5f : (float)i / (RayCount - 1);
                 var rayAngle = Utils.Lerp(
                     raySpread / 2,
                     -raySpread / 2,
@@ -118,7 +118,7 @@ namespace SkiaCarForms
             {
                 paint.Color = SKColors.Yellow;
                 var ray = this.rays[i];
-                var intersection = this.readings[i];
+                var intersection = this.Readings[i];
 
                 if (intersection == null)
                 {

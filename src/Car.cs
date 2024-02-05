@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using SkiaCarForms.Network;
+using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace SkiaCarForms
 
         public float Angle { get; internal set; } = 0f;
 
-        public Controls? Controls { get; set; }
+        public Controls Controls { get; set; }
         public SKPoint[][]? Borders { get; set; }
 
         private readonly Sensor? sensor;
@@ -42,6 +43,7 @@ namespace SkiaCarForms
         private int v3;
         private CarTypeEnum traffic;
         private float factorSpeed;
+        private NeuronalNetwork brain;
 
         public List<Car> Traffics { get; set; }
 
@@ -52,19 +54,30 @@ namespace SkiaCarForms
             this.Y = y;
             this.Height = height;
             this.Width = width;
-            this.Controls = default(Controls);
             this.ShapePolygon = [];
             this.Type = type;
             this.Traffics = [];
+            this.Controls = new Controls();
 
-            if (type == CarTypeEnum.Traffic)
-                InitializeTraffic();
+            switch (this.Type)
+            {
+                case CarTypeEnum.Traffic:
+                    this.Controls.Forward = true;
+                    break;
 
-            if (type == CarTypeEnum.Controled)
-                this.sensor = new Sensor(this);
+                case CarTypeEnum.PlayerControled:
+                    this.sensor = new Sensor(this);
+                    break;
+
+                case CarTypeEnum.IAControled:
+                    this.sensor = new Sensor(this);
+                    this.brain = new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
+                    break;
+            }
 
             MaxSpeed = MaxSpeed * maxSpeedFactor;
 
+           
         }
 
         public void InitializeBitmap()
@@ -74,13 +87,7 @@ namespace SkiaCarForms
             this.carBitmap = Utils.GetTintedImage("Car.png", (int)this.Width, (int)this.Height, color);          
         }
 
-        private void InitializeTraffic()
-        {
-            if (Type != CarTypeEnum.Traffic) return;
 
-            Controls = new Controls();
-            Controls.Forward = true;
-        }
 
         private void createPolygon()
         {
@@ -116,7 +123,31 @@ namespace SkiaCarForms
                 move();
                 createPolygon();
                 this.damaged = assessDamage();
-                sensor?.Update();
+
+                if (this.sensor != null)
+                {
+                    sensor.Update();
+
+                    if (this.brain != null )
+                    {
+                        var offsets = new float[this.sensor.Readings.Length];
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            var reading = this.sensor.Readings[i];
+                            offsets[i] = (reading == null) ? 0 : 1 - reading.Offset;
+                        }
+
+                        var outputs = NeuronalNetwork.feedForward(offsets, this.brain);
+
+                        if (this.Type == CarTypeEnum.IAControled)
+                        {
+                            this.Controls.Forward = outputs[0] > 0;
+                            this.Controls.Left = outputs[1] > 0;
+                            this.Controls.Right= outputs[2] > 0;
+                            this.Controls.Reverse = outputs[3] > 0;
+                        }
+                    }
+                }
             }
         }
 

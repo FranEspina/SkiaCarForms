@@ -9,8 +9,9 @@ namespace SkiaCarForms
     public class Enums { 
         public enum CarTypeEnum
         {
-            Controled,
+            PlayerControled,
             Traffic,
+            IAControled, 
         }
       
     }
