@@ -19,6 +19,7 @@ namespace SkiaCarForms
         private Sensor? sensor;
         private List<Car> traffics;
         private bool userResetAnimation = false;
+        private float phaseDashLine = 0f;
 
         public FormMain()
         {
@@ -183,7 +184,68 @@ namespace SkiaCarForms
 
         private void drawNetworkCanvas(SKCanvas canvas)
         {
-            //canvas.DrawArc(new SKRect())
+            canvas.Clear(SKColors.Black);
+
+
+            var level = car.Brain.Levels[0];
+            var sizeCanvas = canvas.DeviceClipBounds;
+
+            var levelHeight = 40f;
+            var margin = 20f;
+            var radious = 10f;
+            float spacing = sizeCanvas.Height - 2 * margin - car.Brain.Levels.Length * levelHeight;
+
+
+            using (var paint = new SKPaint {
+                IsAntialias = true, 
+                Color = SKColors.White, 
+                StrokeWidth = 1,
+                Style = SKPaintStyle.Stroke
+                
+            })
+            {
+
+                var levelSize = sizeCanvas.Width - 2 * margin - 2 * radious;
+                var left = margin + radious;
+                var right = margin + radious + levelSize;
+
+                float inputY = sizeCanvas.Height - margin - (levelHeight / 2);
+                for (int i=0; i < level.Inputs.Length; i++)
+                {
+                    float inputX = Utils.Lerp(left, right, (float) i / (float) (level.Inputs.Length - 1));
+                    canvas.DrawCircle(new SKPoint(inputX, inputY), radious, paint);
+                }
+
+                float outputY = margin + (levelHeight / 2);
+                for (int i = 0; i < level.Outputs.Length; i++)
+                {
+                    float outputX = Utils.Lerp(left, right, (float)i / (float)(level.Outputs.Length - 1));
+                    canvas.DrawCircle(new SKPoint(outputX, outputY), radious, paint);
+                }
+
+                phaseDashLine += 1;
+                paint.PathEffect = SKPathEffect.CreateDash(new float[] { 5, 2 }, phaseDashLine);
+                for (int i=0; i < level.Inputs.Length; i++)
+                {
+                    float inputX = Utils.Lerp(left, right, (float) i / (float)(level.Inputs.Length - 1));
+                    for (int j = 0; j < level.Outputs.Length; j++)
+                    {
+                        float outputX = Utils.Lerp(left, right, (float) j / (float)(level.Outputs.Length - 1));
+                        canvas.DrawLine(new SKPoint(inputX, inputY), new SKPoint(outputX, outputY), paint);
+                    }
+                }
+
+
+
+
+
+
+
+
+            }
+
+
+
         }
 
         private async void skglControl_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintGLSurfaceEventArgs e)

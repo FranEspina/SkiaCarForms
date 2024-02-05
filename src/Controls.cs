@@ -8,10 +8,10 @@ namespace SkiaCarForms
 {
     internal class Controls
     {
-        public bool Forward {get; internal set;}
-        public bool Left { get; internal set; }
-        public bool Right { get; internal set; }
-        public bool Reverse { get; internal set; }
+        public bool Forward {get; set;}
+        public bool Left { get; set; }
+        public bool Right { get; set; }
+        public bool Reverse { get; set; }
 
         public Controls()
         {

@@ -10,12 +10,12 @@ namespace SkiaCarForms.Network
 {
     internal class Level
     {
-        public float[] Inputs { get; internal set; }
+        public float[] Inputs { get; private set; }
 
-        public float[] Outputs { get; internal set; }
+        public float[] Outputs { get; private set; }
 
-        public float[] Biases { get; internal set; }
-        public float[][] Weights { get; internal set; }
+        public float[] Biases { get; private set; }
+        public float[][] Weights { get; private set; }
 
 
         public Level(int inputCount, int outputCount)

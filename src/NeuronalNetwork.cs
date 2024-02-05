@@ -10,14 +10,14 @@ namespace SkiaCarForms.Network
 
     internal class NeuronalNetwork
     {
-        private Level[] levels;
+        public Level[] Levels { get; private set; }
         public NeuronalNetwork(int[] neuronCounts)
         {
-            this.levels = new Level[neuronCounts.Length - 1];
+            this.Levels = new Level[neuronCounts.Length - 1];
 
             for (int i = 0; i < neuronCounts.Length - 1; i++) 
             { 
-                this.levels[i] = new Level(neuronCounts[i], neuronCounts[i+1]);
+                this.Levels[i] = new Level(neuronCounts[i], neuronCounts[i+1]);
             }
 
         }
@@ -26,9 +26,9 @@ namespace SkiaCarForms.Network
         {
             var values = (float[]) givenValues.Clone();
 
-            for (int i = 0; i < network.levels.Length; i++)
+            for (int i = 0; i < network.Levels.Length; i++)
             {
-                values = Level.feedForward(values, network.levels[i]);
+                values = Level.feedForward(values, network.Levels[i]);
             }
 
             return values;

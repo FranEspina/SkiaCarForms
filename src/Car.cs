@@ -17,7 +17,7 @@ namespace SkiaCarForms
         public float Y { get; set; }
         public float Height { get; set; }
         public float Width { get; set; }
-        public float Speed { get; internal set; }
+        public float Speed { get; set; }
         public float Acceleration { get; set; } = 0.5f;
         public float MaxSpeed { get; set; } = 10f;
         public float MaxReverseSpeed { get; set; } = 3f;
@@ -25,7 +25,7 @@ namespace SkiaCarForms
 
         private float rotationEffect = 0.06f;
 
-        public float Angle { get; internal set; } = 0f;
+        public float Angle { get; private set; } = 0f;
 
         public Controls Controls { get; set; }
         public SKPoint[][]? Borders { get; set; }
@@ -34,7 +34,7 @@ namespace SkiaCarForms
 
         private SKBitmap? carBitmap;
 
-        public SKPoint[] ShapePolygon { get; internal set; }
+        public SKPoint[] ShapePolygon { get; private set; }
 
         private bool damaged = false;
         private object value;
@@ -43,11 +43,11 @@ namespace SkiaCarForms
         private int v3;
         private CarTypeEnum traffic;
         private float factorSpeed;
-        private NeuronalNetwork brain;
+        public NeuronalNetwork Brain { get; private set; }
 
         public List<Car> Traffics { get; set; }
 
-        public CarTypeEnum Type { get; internal set; }
+        public CarTypeEnum Type { get; private set; }
 
         public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1) { 
             this.X = x;
@@ -71,7 +71,7 @@ namespace SkiaCarForms
 
                 case CarTypeEnum.IAControled:
                     this.sensor = new Sensor(this);
-                    this.brain = new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
+                    this.Brain = new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
                     break;
             }
 
@@ -128,7 +128,7 @@ namespace SkiaCarForms
                 {
                     sensor.Update();
 
-                    if (this.brain != null )
+                    if (this.Brain != null )
                     {
                         var offsets = new float[this.sensor.Readings.Length];
                         for (int i = 0; i < offsets.Length; i++)
@@ -137,7 +137,7 @@ namespace SkiaCarForms
                             offsets[i] = (reading == null) ? 0 : 1 - reading.Offset;
                         }
 
-                        var outputs = NeuronalNetwork.feedForward(offsets, this.brain);
+                        var outputs = NeuronalNetwork.feedForward(offsets, this.Brain);
 
                         if (this.Type == CarTypeEnum.IAControled)
                         {
