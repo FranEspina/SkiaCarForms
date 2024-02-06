@@ -33,6 +33,7 @@
             BtnReset = new Button();
             ChkDashboard = new CheckBox();
             skglNetworkControl = new SkiaSharp.Views.Desktop.SKGLControl();
+            btnSave = new Button();
             ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).BeginInit();
             SuspendLayout();
             // 
@@ -80,10 +81,21 @@
             skglNetworkControl.Location = new Point(325, 11);
             skglNetworkControl.Margin = new Padding(4, 3, 4, 3);
             skglNetworkControl.Name = "skglNetworkControl";
-            skglNetworkControl.Size = new Size(277, 502);
+            skglNetworkControl.Size = new Size(277, 468);
             skglNetworkControl.TabIndex = 3;
             skglNetworkControl.VSync = true;
             skglNetworkControl.PaintSurface += skglNetworkControl_PaintSurface;
+            // 
+            // btnSave
+            // 
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.Location = new Point(325, 489);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new Size(277, 27);
+            btnSave.TabIndex = 4;
+            btnSave.Text = "Guardar NNA mejor coche";
+            btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += btnSave_Click;
             // 
             // FormMain
             // 
@@ -91,6 +103,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(615, 561);
+            Controls.Add(btnSave);
             Controls.Add(skglNetworkControl);
             Controls.Add(ChkDashboard);
             Controls.Add(BtnReset);
@@ -114,5 +127,6 @@
         private Button BtnReset;
         private CheckBox ChkDashboard;
         private SkiaSharp.Views.Desktop.SKGLControl skglNetworkControl;
+        private Button btnSave;
     }
 }

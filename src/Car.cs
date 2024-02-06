@@ -1,4 +1,5 @@
 ﻿using SkiaCarForms.Network;
+using SkiaCarForms.Serialization;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static SkiaCarForms.Enums;
 
@@ -24,6 +26,8 @@ namespace SkiaCarForms
         public float Friction { get; set; } = 0.2f;
 
         private float rotationEffect = 0.06f;
+
+        public bool IsBestCar { get; set; }
 
         public float Angle { get; private set; } = 0f;
 
@@ -49,7 +53,7 @@ namespace SkiaCarForms
 
         public CarTypeEnum Type { get; private set; }
 
-        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1) { 
+        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1, string brainJson = "") { 
             this.X = x;
             this.Y = y;
             this.Height = height;
@@ -58,6 +62,9 @@ namespace SkiaCarForms
             this.Type = type;
             this.Traffics = [];
             this.Controls = new Controls();
+            this.IsBestCar = false;
+
+
 
             switch (this.Type)
             {
@@ -67,18 +74,30 @@ namespace SkiaCarForms
 
                 case CarTypeEnum.PlayerControled:
                     this.sensor = new Sensor(this);
-                    this.Brain = new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
+                    this.Brain = InitializeBrain(brainJson);
                     break;
 
                 case CarTypeEnum.IAControled:
                     this.sensor = new Sensor(this);
-                    this.Brain = new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
+                    this.Brain = InitializeBrain(brainJson);
                     break;
             }
 
             MaxSpeed = MaxSpeed * maxSpeedFactor;
 
            
+        }
+
+        private NeuronalNetwork InitializeBrain(string template)
+        {
+            if (string.IsNullOrEmpty(template))
+            {
+                return new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
+            }
+            else
+            {
+                return NeuronalNetworkSerializer.Load(template);
+            }
         }
 
         public void InitializeBitmap()
@@ -138,7 +157,7 @@ namespace SkiaCarForms
                             offsets[i] = (reading == null) ? 0 : 1 - reading.Offset;
                         }
 
-                        this.Brain.feedForward(offsets);
+                        this.Brain.FeedForward(offsets);
                         var outputs = this.Brain.Outputs;
 
                         if (this.Type == CarTypeEnum.IAControled)
@@ -227,7 +246,8 @@ namespace SkiaCarForms
         public void Draw(SKCanvas canvas)
         {
             drawShape(canvas);
-            sensor?.Draw(canvas);
+            if (this.IsBestCar)
+                sensor?.Draw(canvas);
         }
 
         public void Dispose()

@@ -1,8 +1,11 @@
+using SkiaCarForms.Network;
+using SkiaCarForms.Serialization;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
+using System.Text.Json;
 using static SkiaCarForms.Enums;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -15,11 +18,12 @@ namespace SkiaCarForms
 
         private bool animationIsActive = false;
         private float scale = 0;
-        private Car car;
         private Dashboard? dashboard;
         private Road? road;
         private Sensor? sensor;
+        private List<Car> cars;
         private List<Car> traffics;
+        private Car bestCar;
         private bool userResetAnimation = false;
 
         private readonly string upArrow = "\u2191";    // Flecha hacia arriba
@@ -36,6 +40,7 @@ namespace SkiaCarForms
             this.skglControl.Height = this.Height;
 
             this.traffics = new List<Car>();
+            this.cars = new List<Car>();
         }
 
         private async void FormMain_Load(object sender, EventArgs e)
@@ -52,34 +57,43 @@ namespace SkiaCarForms
             road = new Road(skglControl.Width / 2, skglControl.Width * 0.9f);
             var centerLaneRoad = road.GetLaneCenter(2);
 
-            InitializeOneTraffic();
+            InitializeTraffic();
 
-            car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.IAControled);
-            car.Borders = road.Borders;
+            var brainJson = GetBestCarJSon();
 
-            if (car.Type != CarTypeEnum.IAControled)
+
+            for (int i = 0; i < 100; i++)
+            {
+                var car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.IAControled, 1, brainJson);
+                car.Borders = road.Borders;
+                car.Traffics = this.traffics;
+
+                if (car.Brain != null)
+                {
+                    car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(0, upArrow);
+                    car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(1, leftArrow);
+                    car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(2, rightArrow);
+                    car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(3, downArrow);
+                }
+                cars.Add(car);
+            }
+
+            this.cars.ForEach(car => car.Brain.Mutate(0.2f));
+
+            bestCar = cars.First();
+            if (bestCar.Type == CarTypeEnum.PlayerControled)
             {
                 var controls = new Controls();
                 this.KeyPreview = true;
                 this.KeyDown += controls.EventHandlerKeyDown;
                 this.KeyUp += controls.EventHandlerKeyUp;
-                car.Controls = controls;
+                bestCar.Controls = controls;
             }
 
-            if (car.Brain != null)
-            {
-                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(0, upArrow);
-                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(1, leftArrow);
-                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(2, rightArrow);
-                car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(3, downArrow);
-            }
-
-            car.Traffics = this.traffics;
 
             dashboard = new Dashboard(10, 10);
             dashboard.MustDraw = ChkDashboard.Checked;
-            dashboard.Car = car;
-
+            dashboard.Car = bestCar;
 
             await InitializeBitmapsAsync();
 
@@ -88,7 +102,12 @@ namespace SkiaCarForms
         private async Task InitializeBitmapsAsync()
         {
             List<Task> tasks = new List<Task>();
-            tasks.Add(Task.Run(() => car?.InitializeBitmap()));
+
+            foreach (var car in this.cars)
+            {
+                tasks.Add(Task.Run(() => car.InitializeBitmap()));
+            }
+
             foreach (var traffic in this.traffics)
             {
                 tasks.Add(Task.Run(() => traffic.InitializeBitmap()));
@@ -98,42 +117,24 @@ namespace SkiaCarForms
             await Task.WhenAll(tasks);
         }
 
-        private List<Car> InitializeRandomTraffic()
+        private void InitializeTraffic()
         {
 
             this.traffics = new List<Car>();
 
-            for (int i = 1; i < this.TRAFFIC_COUNT; i++)
-            {
-                var height = Utils.Lerp(0, 1f * this.Height, RandomNumberGenerator.GetInt32(1, 10) / 10f);
-                var number = RandomNumberGenerator.GetInt32(0, 5);
-                var posLane = road.GetLaneCenter(number);
-                var factorSpeed = Utils.Lerp(0.1f, 0.9f, RandomNumberGenerator.GetInt32(1, 10) / 10f);
-
-                this.traffics.Add(
-                new Car(posLane, -height, 30, 50, CarTypeEnum.Traffic, factorSpeed));
-
-            }
-
-            return this.traffics;
-
-        }
-
-        private void InitializeOneTraffic()
-        {
-
-            this.traffics = new List<Car>();
-
-            var height = this.Height;
-            var posLane = road.GetLaneCenter(2);
             var factorSpeed = 0.5f;
 
-            this.traffics.Add(new Car(posLane, this.Height *0.3f, 30, 50, CarTypeEnum.Traffic, factorSpeed));
+            var height = this.Height * 0.3f;
+            this.traffics.Add(new Car(road.GetLaneCenter(2), height, 30, 50, CarTypeEnum.Traffic, factorSpeed));
+
+            height += this.Height;
+            this.traffics.Add(new Car(road.GetLaneCenter(1), height, 30, 50, CarTypeEnum.Traffic, factorSpeed));
+            this.traffics.Add(new Car(road.GetLaneCenter(3), height, 30, 50, CarTypeEnum.Traffic, factorSpeed));
 
         }
 
 
-        private void DisposeTraffic()
+        private void DisposeTrafficAndCars()
         {
             foreach (var traffic in this.traffics)
             {
@@ -141,7 +142,15 @@ namespace SkiaCarForms
                 traffic.Dispose();
             }
 
-            this.traffics.RemoveAll(p => p.Speed == 0);
+            this.traffics.Clear();
+
+            foreach (var car in this.cars)
+            {
+                car.Speed = 0;
+                car.Dispose();
+            }
+
+            this.cars.Clear();
         }
 
         async Task AnimationLoop()
@@ -174,7 +183,16 @@ namespace SkiaCarForms
             });
             await Task.WhenAll(tasks);
 
-            car?.Update();
+            tasks = new List<Task>();
+            cars.ForEach(c =>
+            {
+                tasks.Add(Task.Run(() => c.Update()));
+            });
+            await Task.WhenAll(tasks);
+
+            bestCar.IsBestCar = false;
+            bestCar = cars.MinBy(c => c.Y);
+            bestCar.IsBestCar = true;
         }
 
         private void drawCarCanvas(SKCanvas canvas)
@@ -184,13 +202,13 @@ namespace SkiaCarForms
             canvas.Clear(SKColors.LightGray);
 
             canvas.Save();
-            canvas.Translate(0, -car.Y + this.Height * 0.7f);
+            canvas.Translate(0, -bestCar.Y + this.Height * 0.7f);
 
             road?.Draw(canvas);
 
             this.traffics.ForEach(traffic => traffic.Draw(canvas));
 
-            car.Draw(canvas);
+            this.cars.ForEach(car => car.Draw(canvas));
 
             canvas.Restore();
 
@@ -211,7 +229,7 @@ namespace SkiaCarForms
         {
             var surface = e.Surface;
             var canvas = surface.Canvas;
-            Visualizer.DrawNetwork(canvas, car);
+            Visualizer.DrawNetwork(canvas, bestCar);
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
@@ -222,7 +240,7 @@ namespace SkiaCarForms
 
         private async Task ResetAnimationAsync()
         {
-            DisposeTraffic();
+            DisposeTrafficAndCars();
             await InitializeObjectsAsync();
 
             animationIsActive = true;
@@ -234,6 +252,17 @@ namespace SkiaCarForms
         {
             if (dashboard != null)
                 dashboard.MustDraw = ChkDashboard.Checked;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (bestCar == null || bestCar.Brain == null) return;
+            NeuronalNetworkSerializer.SaveFile(this.bestCar.Brain);
+        }
+
+        private string GetBestCarJSon()
+        {
+            return NeuronalNetworkSerializer.LoadContentFile();
         }
 
     }

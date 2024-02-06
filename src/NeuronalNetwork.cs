@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,12 @@ namespace SkiaCarForms.Network
             }
         }
 
+        [JsonConstructor]
+        public NeuronalNetwork(Level[] levels)
+        {
+            this.Levels = levels;
+        }
+
         public NeuronalNetwork(int[] neuronCounts)
         {
             this.Levels = new Level[neuronCounts.Length - 1];
@@ -32,15 +39,22 @@ namespace SkiaCarForms.Network
 
         }
 
-        public void feedForward(float[] givenValues)
+        public void FeedForward(float[] givenValues)
         {
             var values = (float[]) givenValues.Clone();
 
             for (int i = 0; i < this.Levels.Length; i++)
             {
-                values = this.Levels[i].feedForward(values);
+                values = this.Levels[i].FeedForward(values);
             }
  
+        }
+        public void Mutate(float amount)
+        {
+            foreach (var level in Levels)
+            {
+                level.Mutate(amount);
+            }
         }
     }
 }

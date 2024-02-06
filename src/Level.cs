@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
@@ -18,8 +19,17 @@ namespace SkiaCarForms.Network
         
         public float[][] Weights { get; private set; }
 
-        public string[] LabelOutputs { get; private set; } 
+        public string[] LabelOutputs { get; private set; }
 
+        [JsonConstructor]
+        public Level(float[] inputs, float[] outputs, float[] biases, float[][] weights, string[] labelOutputs)
+        {
+            Inputs = inputs;
+            Outputs = outputs;
+            Biases = biases;
+            Weights = weights;
+            LabelOutputs = labelOutputs;
+        }
 
         public Level(int inputCount, int outputCount)
         {
@@ -55,7 +65,7 @@ namespace SkiaCarForms.Network
             }
         }
 
-        public float[] feedForward(float[] givenInputs)
+        public float[] FeedForward(float[] givenInputs)
         {
             if (givenInputs.Length != this.Inputs.Length)
             {
@@ -88,7 +98,21 @@ namespace SkiaCarForms.Network
             return this.Outputs;
         }
 
+        public void Mutate(float amount)
+        {
+            float value = 0f;
 
-
+            for (int j=0; j < this.Outputs.Length; j++)
+            {
+                for (int i = 0;i < this.Inputs.Length; i++)
+                {
+                    value = (float) Random.Shared.NextDouble() * 2f - 1f;
+                    this.Weights[i][j] = Utils.Lerp(this.Weights[i][j], value, amount);
+                }
+                
+                value = (float)Random.Shared.NextDouble() * 2f - 1f;
+                this.Biases[j] *= Utils.Lerp(this.Biases[j], value, amount);
+            }
+        }
     }
 }
