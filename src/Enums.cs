@@ -13,6 +13,11 @@ namespace SkiaCarForms
             Traffic,
             IAControled, 
         }
-      
+
+        public enum SimulationModeEnum
+        {
+            IADriveMode, 
+            PlayerDriveMode
+        }
     }
 }

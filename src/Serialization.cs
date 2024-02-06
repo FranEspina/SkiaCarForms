@@ -18,12 +18,25 @@ namespace SkiaCarForms.Serialization
     internal static class NeuronalNetworkSerializer
     {
 
-        private static readonly string filename = "./bestCar2.json";
+        private static readonly string filename = "./bestCarBrain.json";
+
+        internal static void DeleteFile()
+        {
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
+        }
 
         internal static void SaveFile(NeuronalNetwork network)
         {
             string jsonString = JsonConvert.SerializeObject(network);
             File.WriteAllText(filename, jsonString);
+        }
+
+        internal static string GetContent(NeuronalNetwork network)
+        {
+            return JsonConvert.SerializeObject(network);
         }
 
         internal static string LoadContentFile()

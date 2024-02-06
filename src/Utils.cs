@@ -121,7 +121,7 @@ namespace SkiaCarForms
                         var r = (origColor.Red + color.Red) / 2;
                         var g = (origColor.Green + color.Green) / 2;
                         var b = (origColor.Blue + color.Blue) / 2;
-                        var a = origColor.Alpha;
+                        var a = Math.Min(origColor.Alpha, color.Alpha) ;
 
                         tintedBm.SetPixel(x, y, new SKColor((byte)r, (byte)g, (byte)b, a));
                     }

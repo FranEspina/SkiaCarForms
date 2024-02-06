@@ -13,7 +13,9 @@ namespace SkiaCarForms
     internal class Sensor
     {
         private readonly Car car;
-        public readonly int RayCount = 5;
+        
+        public int RayCount {get; private set;}
+
         private readonly float rayLength = 120f;
         private readonly float raySpread = (float)  Math.PI / 2;
         private SKPoint[][] rays = [];
@@ -34,9 +36,10 @@ namespace SkiaCarForms
             }
         }
 
-        public Sensor(Car car) {
+        public Sensor(Car car, int rayCount) {
             this.car = car;
             this.Readings = [];
+            this.RayCount = rayCount;
         }
 
         public void Update()

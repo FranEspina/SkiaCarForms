@@ -53,7 +53,7 @@ namespace SkiaCarForms
 
         public CarTypeEnum Type { get; private set; }
 
-        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1, string brainJson = "") { 
+        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1f, string brainJson = "", int rayCount = 5) { 
             this.X = x;
             this.Y = y;
             this.Height = height;
@@ -64,8 +64,6 @@ namespace SkiaCarForms
             this.Controls = new Controls();
             this.IsBestCar = false;
 
-
-
             switch (this.Type)
             {
                 case CarTypeEnum.Traffic:
@@ -73,19 +71,18 @@ namespace SkiaCarForms
                     break;
 
                 case CarTypeEnum.PlayerControled:
-                    this.sensor = new Sensor(this);
+                    this.sensor = new Sensor(this, rayCount);
                     this.Brain = InitializeBrain(brainJson);
                     break;
 
                 case CarTypeEnum.IAControled:
-                    this.sensor = new Sensor(this);
+                    this.sensor = new Sensor(this, rayCount);
                     this.Brain = InitializeBrain(brainJson);
                     break;
             }
 
             MaxSpeed = MaxSpeed * maxSpeedFactor;
 
-           
         }
 
         private NeuronalNetwork InitializeBrain(string template)
@@ -104,6 +101,11 @@ namespace SkiaCarForms
         {
             var color = (Type == CarTypeEnum.Traffic) ? Utils.RandomSKColor() : SKColors.DarkBlue;
 
+            if (this.Type == CarTypeEnum.IAControled && !this.IsBestCar)
+            {
+                color = color.WithAlpha(100);
+            }
+            
             this.carBitmap = Utils.GetTintedImage("Car.png", (int)this.Width, (int)this.Height, color);          
         }
 
