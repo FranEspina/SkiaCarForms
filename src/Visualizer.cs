@@ -40,7 +40,7 @@ namespace SkiaCarForms
             var right = margin + radious + horizontalSize;
             float top = margin + (levelHeight / 2);
             float bottom = sizeCanvas.Height - margin - (levelHeight / 2);
-
+            float lerpStep = 0;
 
             for (int k = 0; k < network.Levels.Length; k++)
             {
@@ -49,7 +49,7 @@ namespace SkiaCarForms
 
                 var level = car.Brain.Levels[k];
 
-                float inputY = Utils.Lerp(bottom, top, (float)k / (float)network.Levels.Length);
+                float inputY = Utils.Lerp(bottom, top, (float) k / (float) network.Levels.Length);
 
                 using (var paint = new SKPaint
                 {
@@ -71,11 +71,15 @@ namespace SkiaCarForms
                     paint.PathEffect = SKPathEffect.CreateDash(new float[] { 5, 2 }, phaseDashLine);
                     for (int i = 0; i < level.Inputs.Length; i++)
                     {
-                        float inputX = Utils.Lerp(left, right, (float)i / (float)(level.Inputs.Length - 1));
+                        lerpStep = (level.Inputs.Length == 1) ? 0.5f : (float)i / (float)(level.Inputs.Length - 1);
+
+                        float inputX = Utils.Lerp(left, right, lerpStep);
                         for (int j = 0; j < level.Outputs.Length; j++)
                         {
                             paint.Color = getRGBA(level.Weights[i][j]);
-                            float outputX = Utils.Lerp(left, right, (float)j / (float)(level.Outputs.Length - 1));
+
+                            lerpStep = (level.Outputs.Length == 1) ? 0.5f : (float)j / (float)(level.Outputs.Length - 1);
+                            float outputX = Utils.Lerp(left, right, lerpStep);
                             canvas.DrawLine(new SKPoint(inputX, inputY), new SKPoint(outputX, outputY), paint);
                         }
                     }
@@ -89,7 +93,8 @@ namespace SkiaCarForms
                     paint.Style = SKPaintStyle.Fill;
                     for (int i = 0; i < level.Inputs.Length; i++)
                     {
-                        float inputX = Utils.Lerp(left, right, (float)i / (float)(level.Inputs.Length - 1));
+                        lerpStep = (level.Inputs.Length == 1) ? 0.5f : (float)i / (float)(level.Inputs.Length - 1);
+                        float inputX = Utils.Lerp(left, right, lerpStep);
 
                         paint.Color = SKColors.Black;
                         paint.Style = SKPaintStyle.Fill;
@@ -117,7 +122,8 @@ namespace SkiaCarForms
                     paint.Color = SKColors.Black;
                     for (int i = 0; i < level.Inputs.Length; i++)
                     {
-                        float inputX = Utils.Lerp(left, right, (float)i / (float)(level.Inputs.Length - 1));
+                        lerpStep = (level.Inputs.Length == 1) ? 0.5f : (float)i / (float)(level.Inputs.Length - 1);
+                        float inputX = Utils.Lerp(left, right, lerpStep);
                         canvas.DrawCircle(new SKPoint(inputX, inputY), radious, paint);
                     }
 
@@ -127,7 +133,9 @@ namespace SkiaCarForms
                     //************************************** 
                     for (int i = 0; i < level.Outputs.Length; i++)
                     {
-                        float outputX = Utils.Lerp(left, right, (float)i / (float)(level.Outputs.Length - 1));
+                        lerpStep = (level.Outputs.Length == 1) ? 0.5f : (float)i / (float)(level.Outputs.Length - 1);
+
+                        float outputX = Utils.Lerp(left, right, lerpStep);
                         var position = new SKPoint(outputX, outputY);
                         paint.Style = SKPaintStyle.Fill;
 

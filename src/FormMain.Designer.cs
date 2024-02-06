@@ -45,6 +45,14 @@
             txtCountRays = new TextBox();
             lblCountRays = new Label();
             btnDriveMode = new Button();
+            btnMinusSecondLevel = new Button();
+            btnPlusSecondLevel = new Button();
+            txtSecondLevel = new TextBox();
+            lblSecondLevel = new Label();
+            label1 = new Label();
+            label2 = new Label();
+            label3 = new Label();
+            label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).BeginInit();
             SuspendLayout();
             // 
@@ -67,24 +75,23 @@
             // BtnReset
             // 
             BtnReset.FlatStyle = FlatStyle.Flat;
-            BtnReset.Location = new Point(429, 524);
+            BtnReset.Location = new Point(694, 178);
             BtnReset.Name = "BtnReset";
-            BtnReset.Size = new Size(72, 27);
+            BtnReset.Size = new Size(105, 48);
             BtnReset.TabIndex = 1;
-            BtnReset.Text = "Entrenar";
+            BtnReset.Text = "Entrenar (mutar pesos)";
             BtnReset.UseVisualStyleBackColor = true;
             BtnReset.Click += BtnReset_Click;
             // 
             // ChkDashboard
             // 
             ChkDashboard.AutoSize = true;
-            ChkDashboard.Location = new Point(316, 464);
+            ChkDashboard.Location = new Point(694, 496);
             ChkDashboard.Name = "ChkDashboard";
-            ChkDashboard.Size = new Size(83, 19);
+            ChkDashboard.Size = new Size(135, 19);
             ChkDashboard.TabIndex = 2;
-            ChkDashboard.Text = "Dashboard";
+            ChkDashboard.Text = "Visualizar Dashboard";
             ChkDashboard.UseVisualStyleBackColor = true;
-            ChkDashboard.Visible = false;
             ChkDashboard.CheckedChanged += ChkDashboard_CheckedChanged;
             // 
             // skglNetworkControl
@@ -93,7 +100,7 @@
             skglNetworkControl.Location = new Point(316, 11);
             skglNetworkControl.Margin = new Padding(4, 3, 4, 3);
             skglNetworkControl.Name = "skglNetworkControl";
-            skglNetworkControl.Size = new Size(286, 417);
+            skglNetworkControl.Size = new Size(371, 538);
             skglNetworkControl.TabIndex = 3;
             skglNetworkControl.VSync = true;
             skglNetworkControl.PaintSurface += skglNetworkControl_PaintSurface;
@@ -101,9 +108,9 @@
             // btnSave
             // 
             btnSave.FlatStyle = FlatStyle.Flat;
-            btnSave.Location = new Point(316, 524);
+            btnSave.Location = new Point(805, 178);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(107, 27);
+            btnSave.Size = new Size(100, 48);
             btnSave.TabIndex = 4;
             btnSave.Text = "Guardar mejor coche";
             btnSave.UseVisualStyleBackColor = true;
@@ -112,29 +119,29 @@
             // btnExport
             // 
             btnExport.FlatStyle = FlatStyle.Flat;
-            btnExport.Location = new Point(457, 489);
+            btnExport.Location = new Point(694, 298);
             btnExport.Name = "btnExport";
-            btnExport.Size = new Size(68, 27);
+            btnExport.Size = new Size(211, 27);
             btnExport.TabIndex = 5;
-            btnExport.Text = "Exportar";
+            btnExport.Text = "Exportar mejor coche actual";
             btnExport.UseVisualStyleBackColor = true;
             btnExport.Click += btnExport_Click;
             // 
             // btnImport
             // 
             btnImport.FlatStyle = FlatStyle.Flat;
-            btnImport.Location = new Point(531, 489);
+            btnImport.Location = new Point(694, 265);
             btnImport.Name = "btnImport";
-            btnImport.Size = new Size(71, 27);
+            btnImport.Size = new Size(211, 27);
             btnImport.TabIndex = 6;
-            btnImport.Text = "Importar";
+            btnImport.Text = "Importar modelo";
             btnImport.UseVisualStyleBackColor = true;
             btnImport.Click += btnImport_Click;
             // 
             // txtMutate
             // 
             txtMutate.BorderStyle = BorderStyle.FixedSingle;
-            txtMutate.Location = new Point(507, 526);
+            txtMutate.Location = new Point(763, 127);
             txtMutate.Name = "txtMutate";
             txtMutate.ReadOnly = true;
             txtMutate.Size = new Size(39, 23);
@@ -144,7 +151,7 @@
             // btnPlusMutate
             // 
             btnPlusMutate.FlatStyle = FlatStyle.Flat;
-            btnPlusMutate.Location = new Point(550, 526);
+            btnPlusMutate.Location = new Point(806, 127);
             btnPlusMutate.Name = "btnPlusMutate";
             btnPlusMutate.Size = new Size(23, 23);
             btnPlusMutate.TabIndex = 8;
@@ -155,7 +162,7 @@
             // btnMinusMutate
             // 
             btnMinusMutate.FlatStyle = FlatStyle.Flat;
-            btnMinusMutate.Location = new Point(579, 526);
+            btnMinusMutate.Location = new Point(835, 127);
             btnMinusMutate.Name = "btnMinusMutate";
             btnMinusMutate.Size = new Size(23, 23);
             btnMinusMutate.TabIndex = 9;
@@ -166,18 +173,18 @@
             // btnRandomReset
             // 
             btnRandomReset.FlatStyle = FlatStyle.Flat;
-            btnRandomReset.Location = new Point(316, 489);
+            btnRandomReset.Location = new Point(694, 232);
             btnRandomReset.Name = "btnRandomReset";
-            btnRandomReset.Size = new Size(135, 27);
+            btnRandomReset.Size = new Size(211, 27);
             btnRandomReset.TabIndex = 10;
-            btnRandomReset.Text = "Iniciar desde cero";
+            btnRandomReset.Text = "Modo Automático (reinicia modelo)";
             btnRandomReset.UseVisualStyleBackColor = true;
             btnRandomReset.Click += btnRandomReset_Click;
             // 
             // btnMinusCountRays
             // 
             btnMinusCountRays.FlatStyle = FlatStyle.Flat;
-            btnMinusCountRays.Location = new Point(579, 434);
+            btnMinusCountRays.Location = new Point(835, 39);
             btnMinusCountRays.Name = "btnMinusCountRays";
             btnMinusCountRays.Size = new Size(23, 23);
             btnMinusCountRays.TabIndex = 13;
@@ -188,7 +195,7 @@
             // btnPlusCountRays
             // 
             btnPlusCountRays.FlatStyle = FlatStyle.Flat;
-            btnPlusCountRays.Location = new Point(550, 434);
+            btnPlusCountRays.Location = new Point(806, 39);
             btnPlusCountRays.Name = "btnPlusCountRays";
             btnPlusCountRays.Size = new Size(23, 23);
             btnPlusCountRays.TabIndex = 12;
@@ -199,7 +206,7 @@
             // txtCountRays
             // 
             txtCountRays.BorderStyle = BorderStyle.FixedSingle;
-            txtCountRays.Location = new Point(507, 434);
+            txtCountRays.Location = new Point(763, 39);
             txtCountRays.Name = "txtCountRays";
             txtCountRays.ReadOnly = true;
             txtCountRays.Size = new Size(39, 23);
@@ -209,7 +216,7 @@
             // lblCountRays
             // 
             lblCountRays.AutoSize = true;
-            lblCountRays.Location = new Point(448, 438);
+            lblCountRays.Location = new Point(704, 43);
             lblCountRays.Name = "lblCountRays";
             lblCountRays.Size = new Size(53, 15);
             lblCountRays.TabIndex = 14;
@@ -218,20 +225,105 @@
             // btnDriveMode
             // 
             btnDriveMode.FlatStyle = FlatStyle.Flat;
-            btnDriveMode.Location = new Point(316, 432);
+            btnDriveMode.Location = new Point(694, 521);
             btnDriveMode.Name = "btnDriveMode";
-            btnDriveMode.Size = new Size(107, 27);
+            btnDriveMode.Size = new Size(208, 27);
             btnDriveMode.TabIndex = 15;
             btnDriveMode.Text = "Modo Conducir";
             btnDriveMode.UseVisualStyleBackColor = true;
             btnDriveMode.Click += btnDriveMode_Click;
+            // 
+            // btnMinusSecondLevel
+            // 
+            btnMinusSecondLevel.FlatStyle = FlatStyle.Flat;
+            btnMinusSecondLevel.Location = new Point(835, 83);
+            btnMinusSecondLevel.Name = "btnMinusSecondLevel";
+            btnMinusSecondLevel.Size = new Size(23, 23);
+            btnMinusSecondLevel.TabIndex = 18;
+            btnMinusSecondLevel.Text = "-";
+            btnMinusSecondLevel.UseVisualStyleBackColor = true;
+            btnMinusSecondLevel.Click += btnMinusSecondLevel_Click;
+            // 
+            // btnPlusSecondLevel
+            // 
+            btnPlusSecondLevel.FlatStyle = FlatStyle.Flat;
+            btnPlusSecondLevel.Location = new Point(806, 83);
+            btnPlusSecondLevel.Name = "btnPlusSecondLevel";
+            btnPlusSecondLevel.Size = new Size(23, 23);
+            btnPlusSecondLevel.TabIndex = 17;
+            btnPlusSecondLevel.Text = "+";
+            btnPlusSecondLevel.UseVisualStyleBackColor = true;
+            btnPlusSecondLevel.Click += btnPlusSecondLevel_Click;
+            // 
+            // txtSecondLevel
+            // 
+            txtSecondLevel.BorderStyle = BorderStyle.FixedSingle;
+            txtSecondLevel.Location = new Point(763, 83);
+            txtSecondLevel.Name = "txtSecondLevel";
+            txtSecondLevel.ReadOnly = true;
+            txtSecondLevel.Size = new Size(39, 23);
+            txtSecondLevel.TabIndex = 16;
+            txtSecondLevel.TextAlign = HorizontalAlignment.Center;
+            // 
+            // lblSecondLevel
+            // 
+            lblSecondLevel.AutoSize = true;
+            lblSecondLevel.Location = new Point(696, 87);
+            lblSecondLevel.Name = "lblSecondLevel";
+            lblSecondLevel.Size = new Size(61, 15);
+            lblSecondLevel.TabIndex = 19;
+            lblSecondLevel.Text = "Neuronas:";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(763, 65);
+            label1.Name = "label1";
+            label1.Size = new Size(73, 15);
+            label1.TabIndex = 20;
+            label1.Text = "Capa oculta:";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(763, 21);
+            label2.Name = "label2";
+            label2.Size = new Size(80, 15);
+            label2.TabIndex = 21;
+            label2.Text = "Capa entrada:";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(763, 109);
+            label3.Name = "label3";
+            label3.Size = new Size(95, 15);
+            label3.TabIndex = 22;
+            label3.Text = "Tasa aprendizaje:";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(721, 131);
+            label4.Name = "label4";
+            label4.Size = new Size(36, 15);
+            label4.TabIndex = 23;
+            label4.Text = "Valor:";
             // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(615, 561);
+            ClientSize = new Size(916, 561);
+            Controls.Add(label4);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(lblSecondLevel);
+            Controls.Add(btnMinusSecondLevel);
+            Controls.Add(btnPlusSecondLevel);
+            Controls.Add(txtSecondLevel);
             Controls.Add(btnDriveMode);
             Controls.Add(lblCountRays);
             Controls.Add(btnMinusCountRays);
@@ -279,5 +371,13 @@
         private Button btnPlusCountRays;
         private TextBox txtCountRays;
         private Button btnDriveMode;
+        private Button btnMinusSecondLevel;
+        private Button btnPlusSecondLevel;
+        private TextBox txtSecondLevel;
+        private Label lblSecondLevel;
+        private Label label1;
+        private Label label4;
+        private Label label3;
+        private Label label2;
     }
 }

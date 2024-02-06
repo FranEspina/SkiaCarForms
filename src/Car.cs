@@ -40,7 +40,8 @@ namespace SkiaCarForms
 
         public SKPoint[] ShapePolygon { get; private set; }
 
-        private bool damaged = false;
+        public bool Damaged { get; private set; } = false;
+
         private object value;
         private float v1;
         private int v2;
@@ -53,7 +54,7 @@ namespace SkiaCarForms
 
         public CarTypeEnum Type { get; private set; }
 
-        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1f, string brainJson = "", int rayCount = 5) { 
+        public Car(float x, float y, float width, float height, CarTypeEnum type, float maxSpeedFactor = 1f, string brainJson = "", int rayCount = 5, int inputsSecondLayer = 6) { 
             this.X = x;
             this.Y = y;
             this.Height = height;
@@ -72,12 +73,12 @@ namespace SkiaCarForms
 
                 case CarTypeEnum.PlayerControled:
                     this.sensor = new Sensor(this, rayCount);
-                    this.Brain = InitializeBrain(brainJson);
+                    this.Brain = InitializeBrain(brainJson, inputsSecondLayer);
                     break;
 
                 case CarTypeEnum.IAControled:
                     this.sensor = new Sensor(this, rayCount);
-                    this.Brain = InitializeBrain(brainJson);
+                    this.Brain = InitializeBrain(brainJson, inputsSecondLayer);
                     break;
             }
 
@@ -85,11 +86,11 @@ namespace SkiaCarForms
 
         }
 
-        private NeuronalNetwork InitializeBrain(string template)
+        private NeuronalNetwork InitializeBrain(string template, int inputsSecondLayer)
         {
             if (string.IsNullOrEmpty(template))
             {
-                return new NeuronalNetwork([this.sensor.RayCount, 6, 4]);
+                return new NeuronalNetwork([this.sensor.RayCount, inputsSecondLayer, 4]);
             }
             else
             {
@@ -140,11 +141,11 @@ namespace SkiaCarForms
 
         public void Update()
         {
-            if (!this.damaged)
+            if (!this.Damaged)
             {
                 move();
                 createPolygon();
-                this.damaged = assessDamage();
+                this.Damaged = assessDamage();
 
                 if (this.sensor != null)
                 {
@@ -268,7 +269,7 @@ namespace SkiaCarForms
             canvas.Translate(this.X, this.Y);
             canvas.RotateRadians(-this.Angle);
 
-            if (this.damaged)
+            if (this.Damaged)
             {
                 this.carBitmap = Utils.GetTintedImage("Car.png", (int)this.Width, (int)this.Height, SKColors.DarkGray);
             }

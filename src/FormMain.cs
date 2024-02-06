@@ -34,9 +34,10 @@ namespace SkiaCarForms
         private readonly string rightArrow = "\u2192"; // Flecha hacia la derecha
         private readonly string downArrow = "\u2193";  // Flecha hacia abajo
 
-       
+
 
         private int countRays = 5;
+        private int countNSecondLayer = 6;
 
         public FormMain()
         {
@@ -51,9 +52,9 @@ namespace SkiaCarForms
 
             this.simulationMode = SimulationModeEnum.IADriveMode;
 
-
             updateMutateTextField();
             updateCountRaysTextField();
+            updateNSecondLayerTextField();
         }
 
         private async void FormMain_Load(object sender, EventArgs e)
@@ -67,7 +68,7 @@ namespace SkiaCarForms
 
         private async Task InitializeObjectsAsync()
         {
-            switch(this.simulationMode)
+            switch (this.simulationMode)
             {
                 case SimulationModeEnum.IADriveMode:
                     InitializeObjectsIAMode();
@@ -91,11 +92,19 @@ namespace SkiaCarForms
             InitializeTrafficForIAMode();
 
             var brainJson = GetBestCarJSon();
+            var brainSaved = NeuronalNetworkSerializer.Load(brainJson);
+            if (brainSaved != null)
+            {
+                this.countRays = brainSaved.Levels[0].Inputs.Length;
+                this.countNSecondLayer = brainSaved.Levels[1].Inputs.Length;
+                updateCountRaysTextField();
+                updateNSecondLayerTextField();
+            }
 
 
             for (int i = 0; i < 100; i++)
             {
-                var car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.IAControled, 0.8f, brainJson, this.countRays);
+                var car = new Car(centerLaneRoad, this.Height - 150, 30, 50, CarTypeEnum.IAControled, 0.8f, brainJson, this.countRays, this.countNSecondLayer);
                 car.Borders = road.Borders;
                 car.Traffics = this.traffics;
 
@@ -131,6 +140,8 @@ namespace SkiaCarForms
             dashboard = new Dashboard(10, 10);
             dashboard.MustDraw = ChkDashboard.Checked;
             dashboard.Car = bestCar;
+            dashboard.Traffics = this.traffics;
+            dashboard.Cars = this.cars;
 
 
         }
@@ -155,13 +166,13 @@ namespace SkiaCarForms
                 car.Brain.Levels[car.Brain.Levels.Length - 1].SetLabelOutput(3, downArrow);
             }
             cars.Add(car);
-            
+
             var controls = new Controls();
             this.KeyPreview = true;
             this.KeyDown += controls.EventHandlerKeyDown;
             this.KeyUp += controls.EventHandlerKeyUp;
             car.Controls = controls;
-           
+
 
             dashboard = new Dashboard(10, 10);
             dashboard.MustDraw = ChkDashboard.Checked;
@@ -193,16 +204,13 @@ namespace SkiaCarForms
         {
 
             this.traffics = new List<Car>();
-            
 
-            for (int j=0; j < trafficCount; j++)
+
+            for (int j = 0; j < trafficCount; j++)
             {
 
-                var heightTop = - (float) j * ((float) this.Height) + ((float) this.Height / 2f);
+                var heightTop = -(float)j * ((float)this.Height) + ((float)this.Height / 2f);
                 var heightBottom = heightTop + (this.Height);
-
-                this.traffics.Add(new Car(road.GetLaneCenter(2), ((float)this.Height / 4f), 30, 50, CarTypeEnum.Traffic, 0));
-                return;
 
                 for (int i = 1; i < 5; i++)
                 {
@@ -220,7 +228,7 @@ namespace SkiaCarForms
                         this.traffics.Add(new Car(road.GetLaneCenter(2), ((float)this.Height / 4f), 30, 50, CarTypeEnum.Traffic, 0));
                         return;
                     }
-                        
+
                 }
             }
         }
@@ -245,9 +253,7 @@ namespace SkiaCarForms
             height -= (this.Height / 2);
             this.traffics.Add(new Car(road.GetLaneCenter(2), height, 30, 50, CarTypeEnum.Traffic, factorSpeed));
 
-
         }
-
 
         private void DisposeTrafficAndCars()
         {
@@ -308,6 +314,7 @@ namespace SkiaCarForms
             bestCar.IsBestCar = false;
             bestCar = cars.MinBy(c => c.Y);
             bestCar.IsBestCar = true;
+            dashboard.Car = bestCar;
         }
 
         private void drawCarCanvas(SKCanvas canvas)
@@ -465,6 +472,12 @@ namespace SkiaCarForms
             this.txtCountRays.Text = this.countRays.ToString();
         }
 
+        private void updateNSecondLayerTextField()
+        {
+            this.txtSecondLevel.Text = this.countNSecondLayer.ToString();
+
+        }
+
         private void btnRandomReset_Click(object sender, EventArgs e)
         {
             this.simulationMode = SimulationModeEnum.IADriveMode;
@@ -493,6 +506,25 @@ namespace SkiaCarForms
             this.simulationMode = SimulationModeEnum.PlayerDriveMode;
             userResetAnimation = true;
             animationIsActive = false;
+        }
+
+
+        private void btnPlusSecondLevel_Click(object sender, EventArgs e)
+        {
+            this.countNSecondLayer += 1;
+            if (this.countNSecondLayer > 20)
+                this.countRays = 20;
+
+            updateNSecondLayerTextField();
+        }
+
+        private void btnMinusSecondLevel_Click(object sender, EventArgs e)
+        {
+            this.countNSecondLayer -= 1;
+            if (this.countNSecondLayer < 1)
+                this.countNSecondLayer = 1;
+
+            updateNSecondLayerTextField();
         }
     }
 }
