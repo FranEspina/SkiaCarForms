@@ -74,8 +74,10 @@ namespace SkiaCarForms
 
             this.traffics?.ForEach(traffic =>
             {
-                var touche = Utils.PolyIntersect(ray, traffic.ShapePolygon);
-                if (touche != null) touches.Add(touche);
+                foreach(var touche in Utils.PathIntersectPoly(ray, traffic.ShapePolygon))
+                {
+                    touches.Add(touche);
+                }
             });
 
             if (touches.Count > 0 )

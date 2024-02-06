@@ -60,11 +60,13 @@ namespace SkiaCarForms
 
         public static bool IsPolyIntersect(SKPoint[] poly1, SKPoint[] poly2)
         {
-            return (PolyIntersect(poly1, poly2) != null);
+            return (PolyIntersect(poly1, poly2).Count > 0);
         }
 
-        public static IntersectionPoint? PolyIntersect(SKPoint[] poly1, SKPoint[] poly2)
+        public static List<IntersectionPoint> PolyIntersect(SKPoint[] poly1, SKPoint[] poly2)
         {
+            var intersections = new List<IntersectionPoint>();
+
             for (int i = 0; i < poly1.Length; i++)
             {
                 var A = poly1[i % poly1.Length];
@@ -77,10 +79,32 @@ namespace SkiaCarForms
                     
                     var intersection = GetIntesection(A, B, C, D); 
                     if (intersection != null)
-                        return intersection;
+                        intersections.Add(intersection);
                 }
             }
-            return default(IntersectionPoint);
+            return intersections;
+        }
+
+        public static List<IntersectionPoint> PathIntersectPoly(SKPoint[] path, SKPoint[] poly2)
+        {
+            var intersections = new List<IntersectionPoint>();
+
+            for (int i = 0; i < path.Length - 1; i++)
+            {
+                var A = path[i];
+                var B = path[(i + 1)];
+
+                for (int j = 0; j < poly2.Length; j++)
+                {
+                    var C = poly2[j % poly2.Length];
+                    var D = poly2[(j + 1) % poly2.Length];
+
+                    var intersection = GetIntesection(A, B, C, D);
+                    if (intersection != null)
+                        intersections.Add(intersection);
+                }
+            }
+            return intersections;
         }
 
         public static SKColor RandomSKColor()

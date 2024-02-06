@@ -201,6 +201,9 @@ namespace SkiaCarForms
                 var heightTop = - (float) j * ((float) this.Height) + ((float) this.Height / 2f);
                 var heightBottom = heightTop + (this.Height);
 
+                this.traffics.Add(new Car(road.GetLaneCenter(2), ((float)this.Height / 4f), 30, 50, CarTypeEnum.Traffic, 0));
+                return;
+
                 for (int i = 1; i < 5; i++)
                 {
                     var height = Utils.Lerp(heightTop, heightBottom, RandomNumberGenerator.GetInt32(1, 10) / 10f);
