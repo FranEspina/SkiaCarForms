@@ -18,6 +18,7 @@ A partir de información del proyecto original, se rehace desde cero, cambiando 
 - Simulación de carretera, lindes y carriles de circulación. Los vehículos que se salen de la carretera colisionan.
 - Seguimiento del mejor coche (posibilidad de definir función de fitness) y posibilidad de persistir su red neuronal.
 - Importación de pesos de la red neuronal.
+- Implementación de un panel en el que se pueden mostrar datos en tiempo real de la simulación y que se puede ir ampliando para mostrar información de interés en el aprendizaje.
 
 Es interesenta la representación gráfica de las capas de la red neuronal y de las activaciones entre capas, permite ver visualmente como el valor de los pesos afecta al resultado del movimiento del coche.
 
