@@ -1,4 +1,4 @@
-# SkiaSharp + Windows Forms + Neuoronal Network 
+# SkiaSharp + Windows Forms + Neuronal Network 
 Ejemplo de red neuronal que intenta aprender a conducir un coche.
 
 Gráficos dibujados manualmente usando ``SkiaSharp``, tanto los vehículos como el visualizador de la red neuronal. ``SkiaSharp`` es una API multiplataforma para gráficos 2D para plataformas .NET y que está basada en [Skia](skia.org), librería gráfica de Google.
@@ -23,5 +23,6 @@ A partir de información del proyecto original, se rehace desde cero, cambiando 
 Es interesenta la representación gráfica de las capas de la red neuronal y de las activaciones entre capas, permite ver visualmente como el valor de los pesos afecta al resultado del movimiento del coche.
 
 ## Ejemplo 
-Se muestra un ejemplo de 100 vehículos mutados a partir de una misma red en sus etapas iniciales. Cada vehículo, tras las mutaciones de la generación, toma sus desiciones en función de los estímulos de los sensores que recibe.
+Se muestra un GIF con un ejemplo de 100 vehículos mutados a partir de una misma red en sus etapas iniciales. Cada vehículo, tras las mutaciones de la generación, toma sus desiciones en función de los estímulos de los sensores que recibe.
+
 ![Ejemplo Simulación](https://github.com/FranEspina/SkiaCarForms/assets/53045314/25e52f65-19ad-44f1-8e8e-f469da402737)
