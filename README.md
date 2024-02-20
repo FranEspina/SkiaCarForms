@@ -9,15 +9,14 @@ A partir de información del proyecto original, se rehace desde cero, cambiando 
 
 ## Funcionalidad
 - Conducción manual haciendo uso del teclado: Teclas WASD. Cada una de estas posibles teclas se corresponde a una de las neuronas de la capa de salida.
-- Sensores de colisiones configurables. Determinan el número de neuronas de la capa de entrada.
-- Conducción automatica a través de la red.
-- Acercamiento al aprendizaje genético con selección manual de la especie que sobrevive.
-- Mutaciones aleatorias.
-- Representación visual de la red neuronal y de las activaciones.
+- Conducción automática a través de la red. La red decide en función de los bordes de la carretera y del tráfico prensente que hacer: Girar izquierda o derecha, velocidad hacia delante, incluso posibilidad de ir marcha atrás.
+- Sensores de colisiones configurables. Determinan el número de neuronas de la capa de entrada. Cada sensor calcula en tiempo real las colisiones con otros objetos y la distancia al primer punto de colisión.
+- Acercamiento al aprendizaje genético con selección manual de la especie que sobrevive. Mutaciones aleatorias entre generación.
+- Representación visual de la red neuronal y de las activaciones mediante un gráfico en el panel lateral.
 - Posibilidad de modificar el número de neuronas por capa (excepto la capa de salida que determinan las instrucciones al vehículo).
-- Simulación de tráfico aleatorio que actúan como obstáculos.
-- Simulación de bordes de la carretera.
-- Seguimiento del mejor coche (posibilidad de definir función de fitness) y posibilidad de persistir su red neuronal
+- Simulación de tráfico aleatorio o programado. Los vehículos generados actúan como obstáculos a los vehículos que entrenamos.
+- Simulación de carretera, lindes y carriles de circulación. Los vehículos que se salen de la carretera colisionan.
+- Seguimiento del mejor coche (posibilidad de definir función de fitness) y posibilidad de persistir su red neuronal.
 - Importación de pesos de la red neuronal.
 
 Es interesenta la representación gráfica de las capas de la red neuronal y de las activaciones entre capas, permite ver visualmente como el valor de los pesos afecta al resultado del movimiento del coche.
